@@ -1,0 +1,210 @@
+/**
+ * UC6 — Secure AI Code Execution & Sandboxing
+ * AI agents and LLMs generate code that needs to be executed safely.
+ * Dynamic Workers provide millisecond-start isolated sandboxes (100x faster than containers).
+ * Codemode converts tools into TypeScript APIs — the LLM writes code instead of tool calls (80% token savings).
+ *
+ * References:
+ *   https://blog.cloudflare.com/dynamic-workers/
+ *   https://developers.cloudflare.com/dynamic-workers/
+ *   https://developers.cloudflare.com/agents/api-reference/codemode/
+ *   https://developers.cloudflare.com/workers/runtime-apis/bindings/worker-loader/
+ */
+
+export const uc6 = {
+  id: 'uc6',
+  title: 'Secure AI Code Execution',
+  subtitle: 'Safely execute AI-generated code in isolated sandboxes with millisecond startup',
+
+  nodes: [
+    // Left column — Code sources
+    {
+      id: 'ai-agent',
+      label: 'AI Agent / LLM',
+      sublabel: 'Generates code to execute',
+      icon: '\u{1F916}',
+      type: 'ai-service',
+      column: 'left',
+      description: 'An AI agent or LLM that generates JavaScript/TypeScript code to perform tasks. Instead of making individual tool calls, the agent writes code that chains multiple API calls together — reducing token usage by up to 80%.',
+    },
+    {
+      id: 'mcp-client',
+      label: 'MCP Client / App',
+      sublabel: 'Sends code execution requests',
+      icon: '\u{1F4BB}',
+      type: 'user',
+      column: 'left',
+      description: 'An MCP client, AI coding assistant, or application that needs to execute AI-generated code in a secure sandbox. The code is sent to the host Worker for sandboxed execution.',
+    },
+    // Center column — Cloudflare execution stack
+    {
+      id: 'host-worker',
+      label: 'Host Worker',
+      sublabel: 'Orchestrates execution',
+      icon: '\u{2699}',
+      type: 'cloudflare',
+      column: 'center',
+      product: 'Cloudflare Workers',
+      description: 'The host Worker receives code execution requests and holds the Worker Loader binding (env.LOADER, configured via worker_loaders in wrangler.jsonc). It orchestrates Dynamic Worker creation and defines which bindings, RPC stubs, and APIs the sandboxed code can access.',
+      docsUrl: 'https://developers.cloudflare.com/workers/',
+    },
+    {
+      id: 'codemode',
+      label: 'Codemode',
+      sublabel: 'Tools → TypeScript API',
+      icon: '\u{1F4DD}',
+      type: 'cloudflare',
+      column: 'center',
+      product: 'Cloudflare Codemode',
+      description: 'Codemode (@cloudflare/codemode) converts your tools (AI SDK tools or MCP tools) into typed TypeScript APIs and gives the LLM a single "write code" tool via createCodeTool(). The LLM writes an async function that calls codemode.toolName(args). DynamicWorkerExecutor wraps the Worker Loader binding to handle code normalization, sandbox creation, and result collection.',
+      docsUrl: 'https://developers.cloudflare.com/agents/api-reference/codemode/',
+    },
+    {
+      id: 'worker-loader',
+      label: 'Dynamic Worker Loader',
+      sublabel: 'Millisecond sandbox creation',
+      icon: '\u{26A1}',
+      type: 'cloudflare',
+      column: 'center',
+      product: 'Dynamic Workers',
+      description: 'The Worker Loader binding (env.LOADER) creates new Worker isolates on-demand with code specified at runtime. Configured via worker_loaders in wrangler. Isolates start in milliseconds (100x faster than containers), use megabytes of memory (not hundreds), and scale to millions of concurrent instances without global limits. Two modes: load(code) for one-time execution, get(id, callback) for warm reuse.',
+      docsUrl: 'https://developers.cloudflare.com/dynamic-workers/',
+    },
+    {
+      id: 'sandbox-isolate',
+      label: 'Isolated Worker Sandbox',
+      sublabel: 'Network-blocked V8 isolate',
+      icon: '\u{1F6E1}',
+      type: 'cloudflare',
+      column: 'center',
+      product: 'Dynamic Workers (Sandbox)',
+      description: 'The AI-generated code runs in an isolated V8 isolate with network access blocked by default (globalOutbound: null). The sandbox can only interact with the host through tool calls dispatched via Workers RPC (Cap\'n Web). Console output is captured separately. Execution has a configurable timeout (default 30 seconds).',
+      docsUrl: 'https://developers.cloudflare.com/dynamic-workers/usage/egress-control/',
+    },
+    {
+      id: 'tool-dispatch',
+      label: 'Tool Dispatch (RPC)',
+      sublabel: 'Sandboxed tool execution',
+      icon: '\u{1F504}',
+      type: 'cloudflare',
+      column: 'center',
+      product: 'Workers RPC',
+      description: 'Inside the sandbox, a Proxy intercepts codemode.* calls and routes them back to the host via Workers RPC (ToolDispatcher extends RpcTarget). This allows sandboxed code to call tools without network access — all communication happens through typed RPC bridges.',
+      docsUrl: 'https://developers.cloudflare.com/workers/runtime-apis/rpc/',
+    },
+    // Right column — Results and observability
+    {
+      id: 'ai-gateway',
+      label: 'AI Gateway',
+      sublabel: 'LLM call observability',
+      icon: '\u{1F9E0}',
+      type: 'cloudflare',
+      column: 'right',
+      product: 'Cloudflare AI Gateway',
+      description: 'AI Gateway provides observability and control over the LLM calls that generate the code. Rate limiting, caching, guardrails, and DLP ensure the code generation itself is secure and cost-controlled.',
+      docsUrl: 'https://developers.cloudflare.com/ai-gateway/',
+    },
+    {
+      id: 'execution-result',
+      label: 'Execution Result',
+      sublabel: 'Code output returned',
+      icon: '\u{2705}',
+      type: 'resource',
+      column: 'right',
+      description: 'The result of the sandboxed code execution — including return values, captured console logs, and any errors. Only the final result (not every intermediate step) enters the LLM context window.',
+    },
+    {
+      id: 'tail-worker',
+      label: 'Observability',
+      sublabel: 'Tail Workers + logging',
+      icon: '\u{1F4CA}',
+      type: 'cloudflare',
+      column: 'right',
+      product: 'Cloudflare Workers (Tail)',
+      description: 'Tail Workers capture logs from Dynamic Worker executions for monitoring, debugging, and audit. Every sandboxed execution is observable without modifying the generated code.',
+      docsUrl: 'https://developers.cloudflare.com/dynamic-workers/usage/observability/',
+    },
+  ],
+
+  edges: [
+    { id: 'e-agent-host', from: 'ai-agent', to: 'host-worker', label: 'Code to execute', direction: 'ltr' },
+    { id: 'e-mcp-host', from: 'mcp-client', to: 'host-worker', label: '', direction: 'ltr' },
+    { id: 'e-host-codemode', from: 'host-worker', to: 'codemode', label: '', direction: 'ltr' },
+    { id: 'e-codemode-loader', from: 'codemode', to: 'worker-loader', label: 'Normalized code', direction: 'ltr' },
+    { id: 'e-loader-sandbox', from: 'worker-loader', to: 'sandbox-isolate', label: 'ms startup', direction: 'ltr' },
+    { id: 'e-sandbox-rpc', from: 'sandbox-isolate', to: 'tool-dispatch', label: 'codemode.*', direction: 'ltr' },
+    { id: 'e-rpc-host', from: 'tool-dispatch', to: 'host-worker', label: '', direction: 'rtl' },
+    { id: 'e-host-aig', from: 'host-worker', to: 'ai-gateway', label: '', direction: 'ltr' },
+    { id: 'e-sandbox-result', from: 'sandbox-isolate', to: 'execution-result', label: 'Return value', direction: 'ltr' },
+    { id: 'e-sandbox-tail', from: 'sandbox-isolate', to: 'tail-worker', label: 'Logs', direction: 'ltr' },
+    { id: 'e-result-agent', from: 'execution-result', to: 'ai-agent', label: '', direction: 'rtl' },
+  ],
+
+  steps: [
+    {
+      title: 'AI agent generates code to execute',
+      product: 'Cloudflare AI Gateway',
+      description: 'The AI agent receives a task and generates JavaScript/TypeScript code to accomplish it. Instead of making sequential tool calls, the agent writes a single function that chains multiple API calls together. The code generation request passes through AI Gateway for observability, guardrails, and DLP.',
+      why: 'Code Mode reduces token usage by up to 80% compared to individual tool calls. The agent programmatically processes data instead of sending everything through the LLM. AI Gateway ensures the code generation itself is controlled.',
+      activeNodes: ['ai-agent', 'mcp-client', 'host-worker', 'ai-gateway'],
+      activeEdges: ['e-agent-host', 'e-mcp-host', 'e-host-aig'],
+      docsUrl: 'https://developers.cloudflare.com/agents/api-reference/codemode/',
+      owasp: ['LLM01:2025 Prompt Injection', 'ASI01 Agent Goal Hijack'],
+    },
+    {
+      title: 'Codemode converts tools to TypeScript API',
+      product: 'Cloudflare Codemode',
+      description: 'Codemode generates TypeScript type definitions from your tools and builds a description the LLM can read. The LLM writes an async arrow function that calls codemode.toolName(args). The code is normalized via AST parsing (acorn) for safety.',
+      why: 'TypeScript APIs require far fewer tokens to describe than HTTP/OpenAPI specs. AST normalization catches formatting errors and sanitizes tool names before execution.',
+      activeNodes: ['host-worker', 'codemode'],
+      activeEdges: ['e-host-codemode'],
+      docsUrl: 'https://developers.cloudflare.com/agents/api-reference/codemode/',
+    },
+    {
+      title: 'Dynamic Worker isolate created in milliseconds',
+      product: 'Dynamic Workers',
+      description: 'env.LOADER.load() creates a fresh V8 isolate with the generated code. Startup takes milliseconds (100x faster than containers) and runs on the same machine — the same thread — as the host Worker, with zero network latency. The isolate is configured with globalOutbound: null to block all fetch() and connect() calls. The host passes in RPC stubs via the env object to define exactly which APIs the sandbox can access.',
+      why: 'Millisecond startup means you can create a fresh sandbox for every execution — no reuse, no cross-contamination, no warm pools needed. Network blocking is enforced at the Workers runtime level, not in application code — AI-generated code physically cannot make unauthorized requests.',
+      activeNodes: ['codemode', 'worker-loader', 'sandbox-isolate'],
+      activeEdges: ['e-codemode-loader', 'e-loader-sandbox'],
+      docsUrl: 'https://developers.cloudflare.com/dynamic-workers/',
+      owasp: ['ASI05 Unexpected Code Execution (RCE)', 'LLM06:2025 Excessive Agency'],
+    },
+    {
+      title: 'Sandboxed code calls tools via RPC',
+      product: 'Workers RPC',
+      description: 'Inside the sandbox, a Proxy intercepts codemode.* calls and routes them to the host via Workers RPC (Cap\'n Web). The sandboxed code calls tools like codemode.getWeather("London") — the Proxy translates this to an RPC call across the isolate boundary. The host fulfills the call using ToolDispatcher (extends RpcTarget). No network access is needed — RPC operates within the same machine.',
+      why: 'RPC-based tool dispatch means the sandbox only has access to explicitly provided tool APIs — nothing else. TypeScript interfaces require far fewer tokens to describe than OpenAPI specs. The host Worker controls which tools are available and can validate every call.',
+      activeNodes: ['sandbox-isolate', 'tool-dispatch', 'host-worker'],
+      activeEdges: ['e-sandbox-rpc', 'e-rpc-host'],
+      docsUrl: 'https://developers.cloudflare.com/workers/runtime-apis/rpc/',
+      owasp: ['ASI02 Tool Misuse & Exploitation', 'ASI05 Unexpected Code Execution (RCE)'],
+    },
+    {
+      title: 'Execution result captured',
+      product: 'Dynamic Workers',
+      description: 'The sandbox completes execution. The return value, captured console logs (console.log, console.warn, console.error), and any errors are collected. Only this result — not every intermediate step — enters the LLM context window.',
+      why: 'Capturing only the final result dramatically reduces context window usage. Console output is captured separately and doesn\'t leak to the host. Errors are contained within the sandbox boundary.',
+      activeNodes: ['sandbox-isolate', 'execution-result'],
+      activeEdges: ['e-sandbox-result'],
+    },
+    {
+      title: 'Tail Workers capture execution logs',
+      product: 'Cloudflare Workers (Observability)',
+      description: 'Tail Workers automatically capture logs from every Dynamic Worker execution — including timing, resource usage, tool calls made, and any errors. This provides full observability without modifying the generated code.',
+      why: 'Every sandboxed execution is observable and auditable. Tail Workers provide the monitoring layer that makes AI code execution production-ready — you can track what every agent is doing, when, and how long it takes.',
+      activeNodes: ['sandbox-isolate', 'tail-worker'],
+      activeEdges: ['e-sandbox-tail'],
+      docsUrl: 'https://developers.cloudflare.com/dynamic-workers/usage/observability/',
+      owasp: ['ASI10 Rogue Agents'],
+    },
+    {
+      title: 'Result returned to agent',
+      product: 'Cloudflare Workers',
+      description: 'The execution result is returned to the AI agent or application. The agent incorporates the result into its reasoning and continues the conversation or workflow. The sandbox isolate is discarded — no state persists between executions.',
+      why: 'Stateless, disposable sandboxes ensure zero cross-contamination between executions. The agent gets clean results from a secure execution environment, all in milliseconds.',
+      activeNodes: ['execution-result', 'ai-agent'],
+      activeEdges: ['e-result-agent'],
+    },
+  ],
+};

@@ -1,15 +1,25 @@
 # Cloudflare AI Security - Interactive Visual Demo
 
-An interactive, modular frontend web application that visualizes different Cloudflare AI security use cases. Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
+An interactive, modular frontend web application that visualizes 7 Cloudflare AI security use cases. Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
 
 ## Use Cases
 
+### Secure AI Usage & Applications
+
 | # | Use Case | Cloudflare Products |
 |---|----------|-------------------|
-| 1 | **Secure Workforce Use of GenAI** | Gateway, Access, DLP, RBI, CASB, AI Gateway |
-| 2 | **Govern AI Agents** | Access (MCP Server Portals), DLP for MCP, Workers |
-| 3 | **Build Securely with AI** | AI Gateway (Caching, Rate Limiting, Guardrails, DLP, Dynamic Routing), Workers |
-| 4 | **Protect AI-Powered Apps** | DDoS protection, Bot Management, WAF, Rate Limiting, AI Security for Apps, API Shield |
+| 1 | **Secure Workforce Use of GenAI** | Gateway, Access, DLP (AI Prompt Protection), RBI, CASB, AI Gateway (Secrets Store, Unified Billing) |
+| 2 | **Govern AI Agents** | Access (OAuth 2.1, MCP Server Portals), DLP for MCP, Agents SDK (McpAgent), Workers |
+| 3 | **Build Securely with AI** | AI Gateway (Caching, Rate Limiting, Guardrails, DLP, Dynamic Routing, Secrets Store, Unified Billing), Workers |
+| 4 | **Protect AI-Powered Apps** | DDoS Protection, Bot Management, WAF (Sensitive Data Detection), Rate Limiting, AI Security for Apps (Custom Topics), API Shield |
+
+### Secure AI Infrastructure & Agents
+
+| # | Use Case | Cloudflare Products |
+|---|----------|-------------------|
+| 5 | **Secure Self-Hosted AI Agents** | Access, Sandbox SDK, AI Gateway (env.AI binding), Secrets Store, Browser Rendering, R2, Workers |
+| 6 | **Secure AI Code Execution** | Dynamic Workers (Worker Loader), Codemode, Workers RPC, AI Gateway, Agents SDK |
+| 7 | **Secure AI-to-AI Communication** | Agents SDK (Durable Objects), Access + mTLS, MCP Server Portals, Workflows, AI Search, Queues |
 
 ## How It Works
 
@@ -24,20 +34,24 @@ Users can:
 - **Click any node** to see a tooltip with product description and documentation link
 - **Read the side panel** for each step's title, acting product, description, and "why it matters" context
 
-Two primary flow archetypes are visualized:
-1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services
-2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or other agents
+Three primary flow archetypes are visualized:
+1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4)
+2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5)
+3. **Agent -> Agent**: AI-to-AI orchestration with identity, durable execution, and shared infrastructure (UC6, UC7)
 
 ## Project Structure
 
 ```
 src/
-  index.html                          Landing page with 4 use case cards
+  index.html                          Landing page with 7 use case cards
   use-cases/
     uc1-genai-workforce.html          UC1: Secure Workforce Use of GenAI
     uc2-govern-agents.html            UC2: Govern AI Agents (MCP)
     uc3-build-with-ai.html            UC3: Build Securely with AI
     uc4-protect-ai-apps.html          UC4: Protect AI-Powered Apps
+    uc5-self-hosted-agents.html       UC5: Secure Self-Hosted AI Agents
+    uc6-code-execution.html           UC6: Secure AI Code Execution
+    uc7-multi-agent.html              UC7: Secure AI-to-AI Communication
   components/
     flow-engine.js                    Shared step-through animation controller
     tooltip.js                        Per-node contextual overlay
@@ -51,6 +65,9 @@ src/
     uc2-steps.js                      UC2 nodes, edges, step definitions
     uc3-steps.js                      UC3 nodes, edges, step definitions
     uc4-steps.js                      UC4 nodes, edges, step definitions
+    uc5-steps.js                      UC5 nodes, edges, step definitions
+    uc6-steps.js                      UC6 nodes, edges, step definitions
+    uc7-steps.js                      UC7 nodes, edges, step definitions
 wrangler.jsonc                        Cloudflare Workers Static Assets config
 package.json
 ```
@@ -116,20 +133,40 @@ Covers risks specific to autonomous AI agent systems — tool misuse, identity a
 
 - **Official page**: https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/
 
-UC2 (Govern AI Agents) has the most ASI labels as the primary agentic use case. UC1, UC3, and UC4 include selective ASI labels where agentic patterns exist.
+UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI labels as the primary agentic use cases. UC5 and UC6 map sandbox isolation to ASI05 (Unexpected Code Execution). All use cases include selective labels where applicable threats exist.
 
 ## References
 
 > Use [Cloudflare MCP Servers](https://developers.cloudflare.com/agents/model-context-protocol/mcp-servers-for-cloudflare/) for better LLM research and accuracy.
 
+**AI Security**
 - [Cloudflare AI Security](https://www.cloudflare.com/ai-security/)
 - [Holistic AI Security Learning Path](https://developers.cloudflare.com/learning-paths/holistic-ai-security/concepts/)
-- [AI Gateway Documentation](https://developers.cloudflare.com/ai-gateway/)
-- [Cloudflare One AI Security Analytics](https://developers.cloudflare.com/cloudflare-one/insights/analytics/ai-security/)
-- [MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
 - [AI Security for Apps](https://developers.cloudflare.com/waf/detections/ai-security-for-apps/)
+- [Cloudflare One AI Security Analytics](https://developers.cloudflare.com/cloudflare-one/insights/analytics/ai-security/)
+
+**AI Gateway & Agents**
+- [AI Gateway Documentation](https://developers.cloudflare.com/ai-gateway/)
+- [AI Gateway Worker Binding Methods](https://developers.cloudflare.com/ai-gateway/integrations/worker-binding-methods/)
+- [Agents SDK](https://developers.cloudflare.com/agents/)
+- [MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
+
+**Developer Platform**
+- [Dynamic Workers](https://developers.cloudflare.com/dynamic-workers/)
+- [Codemode](https://developers.cloudflare.com/agents/api-reference/codemode/)
+- [Sandbox SDK](https://developers.cloudflare.com/sandbox/)
+- [Workflows](https://developers.cloudflare.com/workflows/)
+- [AI Search](https://developers.cloudflare.com/ai-search/)
+
+**Infrastructure**
 - [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
 - [Ruleset Engine Phases](https://developers.cloudflare.com/ruleset-engine/reference/phases-list/)
+- [mTLS on Cloudflare](https://developers.cloudflare.com/learning-paths/mtls/concepts/mtls-cloudflare/)
+- [Service Tokens](https://developers.cloudflare.com/cloudflare-one/access-controls/service-credentials/service-tokens/)
+- [Moltworker Blog Post](https://blog.cloudflare.com/moltworker-self-hosted-ai-agent/)
+- [Dynamic Workers Blog Post](https://blog.cloudflare.com/dynamic-workers/)
+
+**OWASP Frameworks**
 - [OWASP Top 10 for LLMs 2025](https://genai.owasp.org/llm-top-10/)
 - [OWASP Top 10 for Agentic Applications 2026](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)
 

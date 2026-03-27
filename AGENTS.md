@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Interactive visual demo of 4 Cloudflare AI security use cases deployed as a purely static site via Cloudflare Workers Static Assets. Vanilla HTML/CSS/JS with ES modules — no build step, no frameworks.
+Interactive visual demo of 7 Cloudflare AI security use cases deployed as a purely static site via Cloudflare Workers Static Assets. Vanilla HTML/CSS/JS with ES modules — no build step, no frameworks.
 
 ## Key Architecture Decisions
 
@@ -196,6 +196,80 @@ Key corrections made:
 - Security Analytics is a Cloudflare product (rendered in center column, not origin column)
 - The flow emphasizes Cloudflare as a reverse proxy protecting the origin
 
+## UC5 Flow Order (verified)
+
+UC5 ("Secure Self-Hosted AI Agents") covers deploying and securing self-hosted AI agents (Moltworker pattern) on Cloudflare's Developer Platform.
+
+**Architecture:** Admin/User -> Access -> Worker Entrypoint -> Sandbox/Container -> AI Gateway -> External Services
+
+**Request path (steps 1–8):**
+
+1. **Admin/User authenticates** → Cloudflare Access (OIDC/SAML, JWT token issued)
+2. **Worker entrypoint routes** → Validates JWT, manages sandbox lifecycle
+3. **Agent runs in Sandbox** → Isolated container with VM-level isolation (filesystem, process, network)
+4. **Secrets Store** → Centralized credential management — agent never sees plaintext keys
+5. **AI Gateway proxies LLM calls** → env.AI binding with gateway: { id } option; BYOK/Secrets Store for keys, Unified Billing, rate limiting, caching, DLP
+6. **Browser Rendering** → Headless Chromium via CDP proxy for web browsing tasks
+7. **R2 persists agent memory** → Bucket mounted as filesystem path via sandbox.mountBucket()
+8. **External API calls proxied** → fetch() routed through Worker for credential injection and audit
+
+**Response path (steps 9–10):**
+
+9. **LLM response returned** → Through AI Gateway with DLP scanning
+10. **Agent reply delivered** → To user via chat client
+
+Key product notes:
+- Based on Moltworker architecture: https://blog.cloudflare.com/moltworker-self-hosted-ai-agent/
+- Sandbox SDK provides per-user isolated containers with full Linux environments
+- All external API calls proxied through Worker for credential injection — agent never holds raw API keys
+- R2 bucket mounting provides persistent storage across container restarts
+
+## UC6 Flow Order (verified)
+
+UC6 ("Secure AI Code Execution") covers safely executing AI-generated code using Dynamic Workers and Codemode.
+
+**Architecture:** AI Agent -> Host Worker -> Codemode -> Dynamic Worker Loader -> Isolated V8 Isolate -> RPC Tool Dispatch -> Results
+
+**Execution path (steps 1–7):**
+
+1. **AI agent generates code** → LLM writes JavaScript via Codemode, passes through AI Gateway
+2. **Codemode converts tools** → TypeScript type definitions from tools, AST normalization
+3. **Dynamic Worker created** → V8 isolate starts in milliseconds (100x faster than containers), globalOutbound: null blocks network
+4. **Sandboxed code calls tools** → Proxy intercepts codemode.* calls, routes via Workers RPC
+5. **Execution result captured** → Return value, console logs, errors collected
+6. **Tail Workers capture logs** → Full observability of every sandboxed execution
+7. **Result returned to agent** → Sandbox isolate discarded, zero cross-contamination
+
+Key product notes:
+- Dynamic Workers: open beta, millisecond startup, V8 isolates (not containers)
+- Codemode: 80% token savings vs individual tool calls
+- Network isolation: fetch() and connect() blocked by default at runtime level
+- Tool dispatch: Workers RPC bridges security boundary with type safety
+- Blog reference: https://blog.cloudflare.com/dynamic-workers/
+
+## UC7 Flow Order (verified)
+
+UC7 ("Secure AI-to-AI Communication") covers multi-agent orchestration with Cloudflare's platform.
+
+**Architecture:** Orchestrator Agent -> Access + mTLS -> MCP Portal -> Specialized Agents (Durable Objects) -> Shared AI Gateway -> Workflows -> Results
+
+**Orchestration path (steps 1–8):**
+
+1. **Task triggers workflow** → Human, cron, or webhook triggers orchestrator agent (Agents SDK on Durable Objects)
+2. **Agent identity verified** → mTLS certificates or service tokens (Client ID + Client Secret) for machine-to-machine auth
+3. **MCP Portal routes tool calls** → Centralized discovery, per-tool authorization, audit logging
+4. **Agents execute with shared AI Gateway** → Per-agent cost allocation, Dynamic Routing for model selection
+5. **Agents share knowledge via AI Search** → Managed search service (uses Vectorize, Workers AI, R2) for RAG patterns
+6. **Async communication via Queues** → Decoupled, reliable message passing between agents
+7. **Workflows guarantee execution** → Durable multi-step tasks with retries, waitForEvent, persistent state
+8. **Results returned** → Orchestrator aggregates results from all specialized agents
+
+Key product notes:
+- Agents SDK: each agent is a Durable Object with SQL database, WebSocket connections, scheduling
+- mTLS and service tokens for machine-to-machine agent authentication
+- Workflows: durable execution that survives failures, supports human-in-the-loop via waitForEvent
+- Queues: prevents cascading failures through asynchronous message passing
+
 ## Design Tokens
 
 - Primary: `#F38020` (Cloudflare orange)
@@ -205,7 +279,7 @@ Key corrections made:
 
 ## OWASP Framework Mappings
 
-Two OWASP frameworks are mapped to Cloudflare product nodes across all 4 use cases. Labels appear in the step info panel as blue badges.
+Two OWASP frameworks are mapped to Cloudflare product nodes across all 7 use cases. Labels appear in the step info panel as blue badges.
 
 ### Frameworks
 
@@ -266,6 +340,36 @@ Two OWASP frameworks are mapped to Cloudflare product nodes across all 4 use cas
 | 6 | AI Security for Apps | LLM01, LLM02, LLM07 | ASI01 |
 | 7 | API Shield | LLM01, LLM05 | ASI02 |
 | 9 | WAF SDD (response) | LLM02 | — |
+
+### UC5 OWASP Mappings
+
+| Step | Product | LLM Labels | ASI Labels |
+|------|---------|------------|------------|
+| 1 | Cloudflare Access | — | ASI03, ASI10 |
+| 3 | Sandbox SDK | — | ASI05 |
+| 4 | Secrets Store | LLM02 | — |
+| 5 | AI Gateway | LLM10 | ASI02 |
+| 8 | Proxied fetch() | LLM02 | ASI02 |
+| 9 | AI Gateway DLP (response) | LLM02 | — |
+
+### UC6 OWASP Mappings
+
+| Step | Product | LLM Labels | ASI Labels |
+|------|---------|------------|------------|
+| 1 | AI Gateway (code gen) | LLM01 | ASI01 |
+| 3 | Dynamic Workers | LLM06 | ASI05 |
+| 4 | Workers RPC (tool dispatch) | — | ASI02, ASI05 |
+| 6 | Tail Workers (observability) | — | ASI10 |
+
+### UC7 OWASP Mappings
+
+| Step | Product | LLM Labels | ASI Labels |
+|------|---------|------------|------------|
+| 2 | Access + mTLS | — | ASI03, ASI10 |
+| 3 | MCP Portal (agent routing) | — | ASI02, ASI04 |
+| 4 | AI Gateway (shared) | LLM10, LLM03 | — |
+| 6 | Queues (async) | — | ASI08 |
+| 7 | Workflows (durable) | — | ASI08 |
 
 ### ASI Label Rationale
 

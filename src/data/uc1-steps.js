@@ -94,7 +94,7 @@ export const uc1 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare Gateway',
-      description: 'HTTP-layer proxy inspects and applies policies to web traffic. Sub-order: Do Not Inspect → Isolate (RBI) → Allow/Block (with sanctioned/unsanctioned status from the App Library + Confidence Scores) → DLP/AV scan on request body. Shadow AI discovery surfaces unapproved AI tool usage.',
+      description: 'HTTP-layer proxy inspects and applies policies to web traffic. Sub-order: Do Not Inspect → Isolate (RBI) → Allow/Block (with sanctioned/unsanctioned status from the App Library + Confidence Scores) → DLP/AV scan on request body. Shadow AI discovery surfaces unapproved AI tool usage. Granular guardrails allow applying DLP profiles to individual AI applications (e.g. ChatGPT) and specific user actions (e.g. SendPrompt).',
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/traffic-policies/http-policies/',
     },
     {
@@ -116,7 +116,7 @@ export const uc1 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare DLP',
-      description: 'Scans outbound request body for sensitive content. Evaluated last in the HTTP policy chain. AI Prompt Protection classifies prompts by content (PII, source code, credentials, financial data) and intent (jailbreak, malicious code). Full prompt logging available.',
+      description: 'Scans outbound request body for sensitive content. Evaluated last in the HTTP policy chain. AI Prompt Protection classifies prompts by content (PII, source code, credentials, financial data) and intent (jailbreak, malicious code). Full prompt logging captures complete interactions with conversation_id filtering for incident investigation.',
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/data-loss-prevention/',
     },
     {
@@ -138,7 +138,7 @@ export const uc1 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare AI Gateway',
-      description: 'Observes and controls AI API calls with logging, rate limiting, and caching. Provides analytics on AI usage patterns. DLP scans both prompts and responses. Usage data feeds the AI Security Report dashboard.',
+      description: 'Observes and controls AI API calls with logging, rate limiting, and caching. BYOK (Secrets Store) centrally manages provider API keys — no plaintext keys in requests. Unified Billing eliminates individual API keys entirely with centralized credits. Provides analytics on AI usage patterns. DLP scans both prompts and responses. Usage data feeds the AI Security Report dashboard.',
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/',
     },
     // Right column — Destinations
@@ -230,8 +230,8 @@ export const uc1 = {
     {
       title: 'HTTP policies: inspect, isolate, allow/block',
       product: 'Cloudflare Gateway (HTTP)',
-      description: 'HTTP-layer inspection begins. Sub-order: (1) Do Not Inspect, (2) Isolate (RBI), (3) Allow/Block using app status from the App Library and Application Confidence Scores. Shadow AI discovery surfaces unapproved AI tool usage in the AI security report.',
-      why: 'HTTP-layer inspection provides the deepest visibility — full URL paths, headers, and application-level controls. Confidence Scores automate risk assessment of AI apps at scale.',
+      description: 'HTTP-layer inspection begins. Sub-order: (1) Do Not Inspect, (2) Isolate (RBI), (3) Allow/Block using app status from the App Library and Application Confidence Scores. Shadow AI discovery surfaces unapproved AI tool usage in the AI security report. Granular guardrails allow applying DLP profiles per AI application and per user action (e.g. block SendPrompt to ChatGPT while allowing browsing).',
+      why: 'HTTP-layer inspection provides the deepest visibility — full URL paths, headers, and application-level controls. Confidence Scores automate risk assessment of AI apps at scale. Granular guardrails let you differentiate policy per AI tool and action type.',
       activeNodes: ['gateway-http', 'rbi'],
       activeEdges: ['e-http-rbi'],
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/traffic-policies/http-policies/',
@@ -250,8 +250,8 @@ export const uc1 = {
     {
       title: 'DLP + AI Prompt Protection',
       product: 'Cloudflare DLP',
-      description: 'DLP scans outbound request bodies — last in HTTP enforcement. AI Prompt Protection classifies prompts by content (PII, source code, credentials, financial data) and intent (jailbreak, malicious code, PII extraction). Full prompt logging available for forensics.',
-      why: 'DLP is the final gatekeeper before data leaves the corporate boundary. Topic-based classification lets you build granular per-group policies — e.g. block engineering from sharing source code with AI but allow HR to query PII.',
+      description: 'DLP scans outbound request bodies — last in HTTP enforcement. AI Prompt Protection classifies prompts by content (PII, source code, credentials, financial data) and intent (jailbreak, malicious code, PII extraction). Full prompt logging captures complete interactions with conversation_id filtering for incident investigation and forensics.',
+      why: 'DLP is the final gatekeeper before data leaves the corporate boundary. Topic-based classification lets you build granular per-group policies — e.g. block engineering from sharing source code with AI but allow HR to query PII. Full prompt logging with conversation_id enables complete incident reconstruction.',
       activeNodes: ['dlp', 'access'],
       activeEdges: ['e-rbi-dlp', 'e-dlp-access'],
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/data-loss-prevention/',
@@ -270,8 +270,8 @@ export const uc1 = {
     {
       title: 'AI Gateway logs API calls',
       product: 'Cloudflare AI Gateway',
-      description: 'AI Gateway logs, rate-limits, and caches AI API calls. For developers using AI coding assistants (OpenCode, Cursor, Claude Code), these benefits apply when the tool has been configured to route requests through AI Gateway\'s OpenAI-compatible endpoint — a one-line base URL change. Provides observability into prompt/response patterns, costs, and usage analytics. Feeds data into the AI Security Report dashboard.',
-      why: 'Centralized visibility and control over all AI API interactions, with cost tracking, rate limiting to prevent abuse, and caching to optimize repeated queries. Developers benefit from AI Gateway when their coding tools are configured to use AI Gateway\'s unified endpoint as the base URL.',
+      description: 'AI Gateway logs, rate-limits, and caches AI API calls. BYOK (Secrets Store) centrally manages provider API keys via Cloudflare Secrets Store — no plaintext keys in request headers. Alternatively, Unified Billing eliminates individual API keys entirely with centralized Cloudflare credits. For developers using AI coding assistants (OpenCode, Cursor, Claude Code), these benefits apply when the tool routes through AI Gateway\'s endpoint. Feeds data into the AI Security Report dashboard for AI-specific analytics.',
+      why: 'Centralized visibility and control over all AI API interactions, with secure key storage via Secrets Store, cost tracking via Unified Billing, rate limiting to prevent abuse, and caching to optimize queries. Developers benefit when their coding tools route through AI Gateway\'s unified endpoint.',
       activeNodes: ['ai-gateway', 'genai-service'],
       activeEdges: ['e-aig-genai'],
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/',

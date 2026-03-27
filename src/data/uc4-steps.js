@@ -97,7 +97,7 @@ export const uc4 = {
       type: 'cloudflare',
       column: 'center',
       product: 'AI Security for Apps',
-      description: 'Detects prompt injection attacks, jailbreak attempts, and sensitive data (PII) in JSON request bodies. Populates detection fields (prompt injection score, PII detected) usable in WAF custom rules and rate limiting rules. Use with the cf-llm endpoint label to scope detections to your AI endpoints.',
+      description: 'Detects prompt injection attacks, jailbreak attempts, PII, unsafe topics, and custom topics in JSON request bodies. Populates detection fields (prompt injection score, PII detected, unsafe topics, custom topic scores, token count) usable in WAF custom rules and rate limiting rules. Custom topics let you define up to 20 org-specific topics (e.g. "competitors", "financial advice"). LLM endpoint discovery (all plans) automatically identifies AI-powered endpoints. Use with the cf-llm managed label to scope detections.',
       docsUrl: 'https://developers.cloudflare.com/waf/detections/ai-security-for-apps/',
     },
     {
@@ -202,8 +202,8 @@ export const uc4 = {
     {
       title: 'AI Security for Apps analyzes prompt',
       product: 'AI Security for Apps',
-      description: 'AI Security for Apps scans the JSON request body for prompt injection attacks, jailbreak attempts, and PII (phone numbers, emails, SSNs, credit cards). Detection results populate cf.llm fields usable in WAF custom rules and rate limiting. Scope to AI endpoints using the cf-llm managed label. Supports custom topic detection and custom prompt extraction.',
-      why: 'Prompt injection is the #1 OWASP risk for LLMs (LLM01:2025). Detecting and blocking these attacks at the edge prevents model manipulation and data exfiltration from your AI application.',
+      description: 'AI Security for Apps (GA) scans JSON request bodies for prompt injection attacks, jailbreak attempts, PII, unsafe topics (14 default categories like violent crimes, hate speech), and custom topics (up to 20 org-specific topics). Token counting (cf.llm.prompt.token_count) enables rate limiting by token consumption. Detection results populate cf.llm fields usable in WAF custom rules and rate limiting. LLM endpoint discovery (free, all plans) automatically maps AI endpoints. The AI Security Log Mode Ruleset logs full request body alongside detections for compliance.',
+      why: 'Prompt injection is the #1 OWASP risk for LLMs (LLM01:2025). Custom topic detection lets you enforce org-specific policies (block "competitors" or "financial advice" prompts). Token counting enables cost-aware rate limiting. LLM endpoint discovery finds shadow AI deployments automatically.',
       activeNodes: ['rate-limiting', 'firewall-ai'],
       activeEdges: ['e-rl-fwai'],
       docsUrl: 'https://developers.cloudflare.com/waf/detections/ai-security-for-apps/',
@@ -248,8 +248,8 @@ export const uc4 = {
     {
       title: 'Events logged to Security Analytics',
       product: 'Cloudflare Security Analytics',
-      description: 'All security events are logged to Security Analytics: AI Security for Apps detections, WAF Sensitive Data Detection alerts, bot scores, rate limiting events, and DDoS mitigations. Filter on cf-llm labeled endpoints for AI-specific visibility.',
-      why: 'Centralized security analytics provide visibility into attack patterns targeting your AI application, AI-specific threats, and the effectiveness of your security posture.',
+      description: 'All security events are logged to Security Analytics: AI Security for Apps detections (prompt injection scores, PII, unsafe topics, custom topics, token counts), WAF Sensitive Data Detection alerts, bot scores, rate limiting events, and DDoS mitigations. Filter on cf-llm labeled endpoints for AI-specific visibility. Cloudflare returns RFC 9457-compliant structured error responses to AI agents (98% token reduction vs HTML error pages).',
+      why: 'Centralized security analytics provide visibility into attack patterns targeting your AI application. RFC 9457 structured errors ensure AI agents can efficiently process Cloudflare security responses without wasting tokens parsing HTML.',
       activeNodes: ['waf', 'security-analytics'],
       activeEdges: ['e-waf-analytics'],
       docsUrl: 'https://developers.cloudflare.com/waf/analytics/security-analytics/',

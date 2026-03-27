@@ -7,7 +7,7 @@
   <!-- Primary Meta Tags -->
   <title>Cloudflare AI Security - Interactive Visual Demos (Unofficial)</title>
   <meta name="title" content="Cloudflare AI Security - Interactive Visual Demos (Unofficial)">
-  <meta name="description" content="Unofficial educational demo: explore 4 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta name="keywords" content="Cloudflare, AI security, GenAI, AI Gateway, Zero Trust, DLP, CASB, WAF, API Shield, MCP, AI agents, LLM security, educational demo">
   <meta name="author" content="Community Demo (Not affiliated with Cloudflare.)">
   <meta name="robots" content="index, follow">
@@ -21,7 +21,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://ai-security.automatic-demo.com/">
   <meta property="og:title" content="Cloudflare AI Security - Interactive Visual Demos (Unofficial)">
-  <meta property="og:description" content="Unofficial educational demo: explore 4 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta property="og:description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta property="og:image" content="https://ai-security.automatic-demo.com/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -32,7 +32,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://ai-security.automatic-demo.com/">
   <meta name="twitter:title" content="Cloudflare AI Security - Interactive Visual Demos (Unofficial)">
-  <meta name="twitter:description" content="Unofficial educational demo: explore 4 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="twitter:description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of Cloudflare AI security use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta name="twitter:image" content="https://ai-security.automatic-demo.com/og-image.png">
   
   <!-- Favicon -->
@@ -131,12 +131,47 @@
       line-height: 1.6;
     }
 
+    .cards-section {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .cards-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .cards-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: clamp(0.5rem, 1.5vw, 0.875rem);
+      padding-left: 0.125rem;
+    }
+
+    .cards-section-number {
+      font-size: clamp(0.5rem, 1vw, 0.625rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cf-orange);
+      background: rgba(243, 128, 32, 0.1);
+      border: 1px solid rgba(243, 128, 32, 0.2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .cards-section-title {
+      font-size: clamp(0.75rem, 1.6vw, 0.9375rem);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
     .cards-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
       gap: clamp(0.75rem, 2vw, 1.25rem);
       width: 100%;
-      max-width: 1100px;
     }
 
     .uc-card {
@@ -381,7 +416,13 @@
         Interactive visual walkthroughs of how Cloudflare secures AI&nbsp;workloads &mdash; from workforce GenAI usage to protecting AI-powered applications.
       </p>
 
-      <div class="cards-grid">
+      <!-- Section 1: Secure AI Usage -->
+      <div class="cards-section">
+        <div class="cards-section-header">
+          <span class="cards-section-number">1 &ndash; 4</span>
+          <span class="cards-section-title">Secure AI Usage &amp; Applications</span>
+        </div>
+        <div class="cards-grid">
         <!-- UC1 -->
         <a class="uc-card" href="/use-cases/uc1-genai-workforce.html">
           <span class="uc-card-number">Use Case 1</span>
@@ -446,6 +487,66 @@
           </div>
           <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
         </a>
+        </div>
+      </div>
+
+      <!-- Section 2: Secure AI Infrastructure -->
+      <div class="cards-section">
+        <div class="cards-section-header">
+          <span class="cards-section-number">5 &ndash; 7</span>
+          <span class="cards-section-title">Secure AI Infrastructure &amp; Agents</span>
+        </div>
+        <div class="cards-grid">
+        <!-- UC5 -->
+        <a class="uc-card" href="/use-cases/uc5-self-hosted-agents.html">
+          <span class="uc-card-number">Use Case 5</span>
+          <span class="uc-card-flow-type agent-resource">&#129302; AI Agent &rarr; Cloudflare &rarr; &#128450; Tools / APIs</span>
+          <h3>Secure Self-Hosted AI Agents</h3>
+          <p>Run AI agents on Cloudflare with defense-in-depth: isolated sandboxes, AI Gateway for LLM calls, and proxied external API access with credential injection.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Access</span>
+            <span class="product-tag">Sandbox SDK</span>
+            <span class="product-tag">AI Gateway</span>
+            <span class="product-tag">Secrets Store</span>
+            <span class="product-tag">Browser Rendering</span>
+            <span class="product-tag">R2</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC6 -->
+        <a class="uc-card" href="/use-cases/uc6-code-execution.html">
+          <span class="uc-card-number">Use Case 6</span>
+          <span class="uc-card-flow-type both-flows">&#129302; AI Agent &rarr; Cloudflare &rarr; &#9889; Sandboxed Code</span>
+          <h3>Secure AI Code Execution</h3>
+          <p>Safely execute AI-generated code in isolated Dynamic Worker sandboxes with millisecond startup — 100x faster than containers.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Dynamic Workers</span>
+            <span class="product-tag">Codemode</span>
+            <span class="product-tag">Workers RPC</span>
+            <span class="product-tag">AI Gateway</span>
+            <span class="product-tag">Agents SDK</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC7 -->
+        <a class="uc-card" href="/use-cases/uc7-multi-agent.html">
+          <span class="uc-card-number">Use Case 7</span>
+          <span class="uc-card-flow-type agent-resource">&#129302; Agent &rarr; Cloudflare &rarr; &#129302; Agent</span>
+          <h3>Secure AI-to-AI Communication</h3>
+          <p>Orchestrate multiple AI agents with mTLS identity, per-tool authorization, durable execution via Workflows, and shared knowledge.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Agents SDK</span>
+            <span class="product-tag">Access + mTLS</span>
+            <span class="product-tag">MCP Portals</span>
+            <span class="product-tag">Workflows</span>
+            <span class="product-tag">AI Search</span>
+            <span class="product-tag">Queues</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+        </div>
       </div>
     </main>
 

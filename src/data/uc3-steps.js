@@ -45,7 +45,7 @@ export const uc3 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare AI Gateway',
-      description: 'The AI Gateway unified endpoint receives all LLM API requests through a single URL. Integration requires changing just the base URL — one line of code. BYOK (Store Keys) securely stores provider API keys at the edge, preventing client-side exposure.',
+      description: 'The AI Gateway unified endpoint receives all LLM API requests through a single URL. Integration requires changing just the base URL — one line of code. Gateway authentication (cf-aig-authorization header) prevents unauthorized access. BYOK (Secrets Store) centrally manages provider API keys — reference by name, never pass in plaintext. Unified Billing eliminates API keys entirely with centralized Cloudflare credits.',
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/',
     },
     {
@@ -67,7 +67,7 @@ export const uc3 = {
       type: 'cloudflare',
       column: 'center',
       product: 'AI Gateway Caching',
-      description: 'Caches responses from AI providers for identical requests. Reduces latency, saves costs, and increases throughput. Supports custom cache keys and TTL configuration.',
+      description: 'Caches responses from AI providers. Supports both exact-match caching and semantic caching (similar but not identical prompts). Reduces latency, saves costs, and increases throughput. Supports custom cache keys and TTL configuration.',
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/features/caching/',
     },
     {
@@ -149,7 +149,7 @@ export const uc3 = {
       icon: '\u{1F9E0}',
       type: 'cloudflare',
       column: 'right',
-      description: 'Cloudflare Workers AI — run open-source models directly on Cloudflare\'s global network. Zero egress fees, low latency inference at the edge.',
+      description: 'Cloudflare Workers AI — run open-source models on serverless GPUs across Cloudflare\'s global network. No API keys required. Data never leaves Cloudflare\'s network — a unique security advantage over external providers. Zero egress fees, low latency inference.',
       docsUrl: 'https://developers.cloudflare.com/workers-ai/',
     },
     {
@@ -186,8 +186,8 @@ export const uc3 = {
     {
       title: 'App or developer sends LLM request',
       product: 'Cloudflare AI Gateway',
-      description: 'Your application or developer\'s AI coding assistant sends an LLM API request through the AI Gateway unified endpoint — one line of code change. BYOK (Store Keys) securely stores provider API keys at the edge, preventing client-side exposure.',
-      why: 'AI Gateway provides a single control plane for all AI API calls — whether from production applications or developer tools — with secure key storage, observability, and policy enforcement.',
+      description: 'Your application or developer\'s AI coding assistant sends an LLM API request through the AI Gateway unified endpoint — one line of code change. Gateway authentication (cf-aig-authorization) prevents unauthorized access. BYOK (Secrets Store) centrally manages provider API keys — reference by name, no plaintext. Unified Billing eliminates API keys entirely with centralized Cloudflare credits.',
+      why: 'AI Gateway provides a single control plane for all AI API calls with authenticated access, centralized key management via Secrets Store, and unified billing that removes the need for individual provider API keys entirely.',
       activeNodes: ['app-agent', 'developer', 'aig-endpoint'],
       activeEdges: ['e-app-aig', 'e-dev-aig'],
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/',
@@ -206,8 +206,8 @@ export const uc3 = {
     {
       title: 'Cache check',
       product: 'AI Gateway Caching',
-      description: 'AI Gateway checks if an identical request has been cached. On cache hit, the cached response is returned immediately without calling the LLM provider. Supports custom cache keys and configurable TTL.',
-      why: 'Caching identical requests dramatically reduces latency and costs. Ideal for applications with predictable prompt patterns like support bots or FAQ assistants.',
+      description: 'AI Gateway checks for cached responses. Supports both exact-match caching and semantic caching — returning cached responses for similar (not just identical) prompts. On cache hit, the response is returned immediately without calling the LLM provider. Supports custom cache keys and configurable TTL.',
+      why: 'Caching dramatically reduces latency and costs. Semantic caching extends this to similar prompts, ideal for natural language queries where users phrase the same question differently.',
       activeNodes: ['rate-limit', 'cache'],
       activeEdges: ['e-rl-cache'],
       docsUrl: 'https://developers.cloudflare.com/ai-gateway/features/caching/',

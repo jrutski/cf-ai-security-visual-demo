@@ -1,6 +1,18 @@
 /**
  * UC2 — Govern AI Agents (Human <-> AI Agent <-> Resources)
  * Cloudflare Access (MCP Server Portals), DLP for MCP (coming soon), Remote MCP Servers on Workers
+ *
+ * Key governance principle: Remote MCP servers via Cloudflare are recommended over local
+ * installations. Local MCP servers = shadow IT risk with no audit trail.
+ * Remote MCP servers = centralized visibility, identity-based access, and audit logging.
+ *
+ * MCP authorization uses OAuth 2.1. Cloudflare Access acts as the OAuth provider,
+ * issuing OAuth ID tokens with user identity attributes for per-tool authorization.
+ *
+ * References:
+ *   https://developers.cloudflare.com/agents/model-context-protocol/governance/
+ *   https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/
+ *   https://developers.cloudflare.com/agents/guides/remote-mcp-server/
  */
 
 export const uc2 = {
@@ -37,7 +49,7 @@ export const uc2 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare Access',
-      description: 'Zero Trust authentication and authorization. Users authenticate via OIDC/SAML from configured identity providers. Access issues short-lived tokens and enforces session policies.',
+      description: 'Zero Trust authentication and authorization. Users authenticate via OIDC/SAML from configured identity providers. For MCP servers, Access acts as the OAuth 2.1 provider — issuing OAuth ID tokens with user identity attributes. Service tokens (Client ID + Client Secret) enable machine-to-machine authentication for automated agent systems.',
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/access-controls/policies/',
     },
     {
@@ -48,7 +60,7 @@ export const uc2 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare MCP Server Portal',
-      description: 'Centralizes multiple MCP servers onto a single HTTP endpoint. Admins curate tools and prompt templates per portal. Supports both unauthenticated and OAuth-secured MCP servers.',
+      description: 'Centralizes multiple MCP servers onto a single HTTP endpoint. Admins curate tools, turn individual tools on/off, and configure prompt templates per portal. Supports both unauthenticated and OAuth-secured MCP servers. Portal logs provide per-portal and per-server audit views of all tool invocations.',
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/',
     },
     {
@@ -82,7 +94,7 @@ export const uc2 = {
       type: 'cloudflare',
       column: 'center',
       product: 'Cloudflare Workers',
-      description: 'Remote MCP server deployed on Cloudflare Workers. Executes tool calls and connects to internal APIs, databases, or external services. Supports Streamable HTTP transport and OAuth 2.1 authorization.',
+      description: 'Remote MCP server deployed on Cloudflare Workers using the Agents SDK (McpAgent class). Built on Durable Objects for stateful execution with built-in SQL database. Supports Streamable HTTP transport and OAuth 2.1 authorization. Remote servers are recommended over local installations — local MCP servers introduce shadow IT risks with no audit trail.',
       docsUrl: 'https://developers.cloudflare.com/agents/model-context-protocol/',
     },
     // Right column — Resources (specific examples per visual inspiration)
@@ -134,8 +146,8 @@ export const uc2 = {
     {
       title: 'User authenticates via Access',
       product: 'Cloudflare Access',
-      description: 'The human user authenticates through Cloudflare Access using their organization\'s identity provider (OIDC/SAML). Access verifies identity, device posture, and context.',
-      why: 'Zero Trust authentication ensures only verified users from your organization can interact with MCP servers. No implicit trust based on network location.',
+      description: 'The human user authenticates through Cloudflare Access using their organization\'s identity provider (OIDC/SAML). For MCP servers, Access acts as the OAuth 2.1 provider per the MCP specification. Service tokens (Client ID + Client Secret) are available for machine-to-machine agent authentication.',
+      why: 'Zero Trust authentication ensures only verified users from your organization can interact with MCP servers. OAuth 2.1 integration follows the MCP specification natively. Service tokens enable headless agent authentication.',
       activeNodes: ['human-user', 'cf-access'],
       activeEdges: ['e-human-access'],
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/access-controls/policies/',
@@ -153,8 +165,8 @@ export const uc2 = {
     {
       title: 'User connects to MCP Portal',
       product: 'Cloudflare MCP Server Portal',
-      description: 'The user\'s MCP client connects to the MCP Server Portal — a centralized HTTP endpoint that aggregates multiple MCP servers. The portal presents curated tools and prompt templates configured by admins.',
-      why: 'MCP Portals centralize management, letting admins control exactly which tools are exposed. Fewer exposed tools mean better AI responses and reduced risk surface.',
+      description: 'The user\'s MCP client connects to the MCP Server Portal — a centralized HTTP endpoint that aggregates multiple MCP servers. The portal presents curated tools and prompt templates configured by admins. Individual tools can be turned on/off. Remote MCP servers are recommended over local installations to avoid shadow IT risks.',
+      why: 'MCP Portals centralize management — a single URL replaces configuring each MCP server individually. Admins control exactly which tools are exposed with per-tool toggles. Local MCP servers are shadow IT; remote servers through Cloudflare provide full visibility and control.',
       activeNodes: ['ai-agent', 'mcp-portal'],
       activeEdges: ['e-agent-portal'],
       docsUrl: 'https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/',
@@ -191,8 +203,8 @@ export const uc2 = {
     {
       title: 'MCP server executes tool call',
       product: 'Cloudflare Workers',
-      description: 'The MCP server executes the tool call — connecting to SaaS apps (Slack, GitHub), self-hosted apps (Confluence), or custom Workers-based services.',
-      why: 'Running MCP servers on Cloudflare Workers provides global low-latency execution with built-in security, scalability, and observability.',
+      description: 'The MCP server (built with the Agents SDK McpAgent class on Durable Objects) executes the tool call — connecting to SaaS apps (Slack, GitHub), self-hosted apps (Confluence), or custom Workers-based services. Each agent instance has its own SQL database for stateful execution. Workers isolate runtime provides sandboxed execution.',
+      why: 'Running MCP servers on Cloudflare Workers with the Agents SDK provides stateful, globally distributed execution with built-in SQL storage, WebSocket connections, and task scheduling — all in an isolated runtime environment.',
       activeNodes: ['mcp-server', 'saas-apps', 'self-hosted', 'custom-workers'],
       activeEdges: ['e-server-saas', 'e-server-hosted', 'e-server-custom'],
       docsUrl: 'https://developers.cloudflare.com/agents/model-context-protocol/',
@@ -201,8 +213,8 @@ export const uc2 = {
     {
       title: 'Agentic calls logged and audited',
       product: 'Cloudflare Access',
-      description: 'All MCP tool invocations are logged by Cloudflare Access with full context: who called which tool, when, with what parameters, and from what device.',
-      why: 'Comprehensive audit logging is essential for compliance, incident investigation, and understanding how AI agents interact with organizational resources.',
+      description: 'All MCP tool invocations are logged by Cloudflare Access with full context: who called which tool, when, with what parameters, and from what device. Portal logs provide per-portal and per-server audit views. Prompts and responses made through the portal are captured for compliance.',
+      why: 'Comprehensive audit logging with per-portal and per-server views is essential for compliance, incident investigation, and understanding how AI agents interact with organizational resources.',
       activeNodes: ['mcp-server', 'mcp-portal'],
       activeEdges: [],
       owasp: ['ASI10 Rogue Agents', 'ASI08 Cascading Failures'],
