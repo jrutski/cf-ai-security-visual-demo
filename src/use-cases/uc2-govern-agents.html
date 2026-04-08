@@ -46,18 +46,22 @@
   <link rel="stylesheet" href="/styles/diagram.css">
   
   <!-- Structured Data (JSON-LD) -->
-  <script type="application/ld+json">
+    <script type="application/ld+json">
   {
     "@context": "https://schema.org",
     "@type": "HowTo",
     "name": "Govern AI Agents and MCP",
-    "description": "How Cloudflare secures agentic AI communication via MCP protocol with identity verification and policy enforcement.",
+    "description": "How Cloudflare secures agentic AI communication via MCP protocol with Gateway DLP, Access ZTNA, MCP Server Portals, AI Gateway, and Codemode sandboxing.",
     "step": [
-      {"@type": "HowToStep", "name": "Agent Initiates Request", "text": "AI agent initiates MCP tool call"},
-      {"@type": "HowToStep", "name": "Identity Verification", "text": "Cloudflare Access verifies machine-to-machine auth"},
-      {"@type": "HowToStep", "name": "MCP Portal Routing", "text": "MCP Server Portal routes and logs requests"},
-      {"@type": "HowToStep", "name": "DLP Inspection", "text": "Gateway HTTP and DLP scan MCP payloads"},
-      {"@type": "HowToStep", "name": "Tool Execution", "text": "Request reaches target MCP remote server"}
+      {"@type": "HowToStep", "name": "User connects via MCP client", "text": "User opens MCP client (OpenCode, Claude Code) and connects to MCP Server Portal"},
+      {"@type": "HowToStep", "name": "LLM calls via AI Gateway", "text": "LLM inference calls routed through AI Gateway for cost controls and logging"},
+      {"@type": "HowToStep", "name": "Gateway inspects MCP traffic", "text": "Cloudflare Gateway applies DLP scanning to MCP portal traffic"},
+      {"@type": "HowToStep", "name": "Codemode sandboxes execution", "text": "Dynamic Workers isolate tool execution via Codemode with network isolation"},
+      {"@type": "HowToStep", "name": "MCP Portal routes tool calls", "text": "MCP Server Portal aggregates and routes tool calls to remote MCP servers"},
+      {"@type": "HowToStep", "name": "Access enforces identity", "text": "ZTNA enforces SSO + MFA and per-server Access policies"},
+      {"@type": "HowToStep", "name": "Remote MCP server executes", "text": "Remote MCP server on Workers executes tool call against SaaS or internal services"},
+      {"@type": "HowToStep", "name": "Audit logging", "text": "All interactions logged across Access, Gateway, and AI Gateway"},
+      {"@type": "HowToStep", "name": "Response returns", "text": "Tool result returns to user through secured and audited pipeline"}
     ],
     "isPartOf": {
       "@type": "WebSite",
@@ -81,11 +85,11 @@
     <div class="flow-archetype-labels">
       <div class="archetype-label">
         <span class="archetype-arrow human-ai"></span>
-        Human &rarr; AI Agent (user to MCP portal)
+        User &rarr; MCP Client &rarr; Cloudflare Gateway
       </div>
       <div class="archetype-label">
         <span class="archetype-arrow agent-resource"></span>
-        Agentic AI &rarr; Resources (MCP server to APIs)
+        MCP Portal &rarr; Remote MCP Server &rarr; Services
       </div>
     </div>
 
@@ -97,13 +101,13 @@
           <svg class="flow-edges"></svg>
           <div class="flow-columns">
             <div class="flow-column col-left">
-              <div class="column-label">Users & Agents</div>
+              <div class="column-label">Users & LLMs</div>
             </div>
             <div class="flow-column col-center">
-              <div class="column-label">Cloudflare Access & MCP</div>
+              <div class="column-label">Cloudflare</div>
             </div>
             <div class="flow-column col-right">
-              <div class="column-label">Resources</div>
+              <div class="column-label">Downstream Services</div>
             </div>
           </div>
         </div>
@@ -117,6 +121,7 @@
           <button class="btn btn-secondary" data-action="next">&rarr;</button>
           <button class="btn btn-secondary" data-action="reset">Reset</button>
           <span class="step-counter">0 / 9</span>
+
         </div>
         <div class="panel-step-info">
           <div class="step-info-placeholder">

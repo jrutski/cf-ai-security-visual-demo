@@ -110,27 +110,47 @@ Viewport fit:
 
 ## UC2 Flow Order (verified)
 
-UC2 ("Govern AI Agents & MCP") covers securing agentic AI communication — AI agents accessing tools/resources via MCP protocol through Cloudflare.
+UC2 ("Govern AI Agents & MCP") covers securing agentic AI communication — users and AI agents accessing tools/resources via MCP protocol through Cloudflare's governance layer.
+
+**Left column (Users & LLMs):**
+- **User** — Employee or developer
+- **MCP Clients** — OpenCode, Claude Code, Cursor IDE, Claude Desktop
+- **LLMs** — Claude, Gemini, GPT, etc.
+- **AI Gateway** — Cost controls, rate limiting, caching, logging for LLM calls
+
+**Center column (Cloudflare governance layer):**
+- **Cloudflare Gateway** — Secure Web Gateway with HTTP inspection and DLP scanning of MCP portal traffic
+- **Worker Isolate** — Dynamic Workers / Codemode sandbox for isolated MCP tool execution
+- **MCP Server Portal** — Centralized MCP gateway with tool curation, per-tool toggles, audit logging, Logpush
+- **Remote MCP Servers** — Deployed globally on Cloudflare Workers (Agents SDK, McpAgent, Durable Objects)
+- **ZTNA (Access)** — SSO + MFA, OAuth 2.1 provider, per-server Access policies
+
+**Right column (Downstream Services):**
+- **SaaS MCP Servers** — Slack, Jira, GitHub
+- **Internal Services** — Databases, APIs
 
 **Request path (steps 1–7):**
 
-1. **AI Agent / LLM** → External AI agent or orchestrator initiates MCP tool call
-2. **MCP Client** → Translates agent intent into MCP protocol request
-3. **Cloudflare Access** → Identity verification (mTLS, service tokens) for machine-to-machine auth
-4. **MCP Server Portal** → Cloudflare-hosted MCP server portal (open beta, all plans) — discovery, routing, logging
-5. **Gateway HTTP + DLP** → Inline inspection of MCP payloads, DLP scans for sensitive data in tool calls
-6. **DLP for MCP** → Coming Soon — dedicated DLP scanning for MCP server portal traffic
-7. **MCP Remote Server** → Request reaches the target tool/resource server
+1. **User → MCP Clients** → User connects via MCP client application to portal URL
+2. **LLMs → AI Gateway** → LLM inference calls routed through AI Gateway for cost controls and logging
+3. **MCP Clients → Cloudflare Gateway** → Gateway inspects MCP traffic with DLP profiles (credentials, financial data, PII)
+4. **Gateway → Worker Isolate** → Codemode sandboxes tool execution in isolated V8 isolates with network isolation
+5. **Gateway → MCP Server Portal** → Portal aggregates MCP servers, curates tools, logs invocations
+6. **ZTNA (Access) → MCP Portal** → Access enforces SSO + MFA and per-server Access policies
+7. **MCP Portal → Remote MCP Servers → SaaS/Internal** → Remote MCP server executes tool against downstream services
 
-**Response path (steps 8–9):**
+**Observability & response (steps 8–9):**
 
-8. **MCP Remote Server → MCP Server Portal** → Response returns through portal with logging
-9. **MCP Server Portal → AI Agent** → Final response delivered to agent/LLM
+8. **Audit logging** → All interactions logged across Access portal logs, Gateway HTTP logs, AI Gateway analytics
+9. **Response → MCP Clients → User** → Tool result returns through secured and audited pipeline
 
 Key product notes:
-- MCP Server Portals: open beta, all plans
-- DLP for MCP Server Portals: Coming Soon (uses `coming-soon` node type in diagram)
-- Gateway HTTP provides inline inspection of MCP protocol traffic
+- MCP Server Portals: open beta, all plans (https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
+- DLP for MCP portal traffic: GA via Gateway routing (https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/#route-portal-traffic-through-gateway)
+- AI Gateway: all plans (https://developers.cloudflare.com/ai-gateway/)
+- Dynamic Workers / Codemode: open beta (https://developers.cloudflare.com/dynamic-workers/)
+- Remote MCP Servers on Workers: (https://developers.cloudflare.com/agents/guides/remote-mcp-server/)
+- Note: DLP AI prompt profiles do NOT apply to MCP server portal traffic per docs
 
 ## UC3 Flow Order (verified)
 
@@ -310,11 +330,12 @@ Two OWASP frameworks are mapped to Cloudflare product nodes across all 7 use cas
 
 | Step | Product | LLM Labels | ASI Labels |
 |------|---------|------------|------------|
-| 1 | Cloudflare Access | — | ASI03 |
-| 3 | MCP Server Portal | LLM06 | ASI02, ASI04 |
-| 5 | Access Policy (per-tool) | LLM06, LLM01 | ASI02, ASI03 |
-| 6 | DLP for MCP | LLM02 | ASI01, ASI02 |
-| 7 | MCP Server (Workers) | LLM06 | ASI05 |
+| 2 | AI Gateway | LLM10 | — |
+| 3 | Cloudflare Gateway (DLP) | LLM02 | ASI01, ASI02 |
+| 4 | Worker Isolate (Codemode) | LLM06 | ASI05 |
+| 5 | MCP Server Portal | LLM06 | ASI02, ASI04 |
+| 6 | ZTNA (Access) | LLM06, LLM01 | ASI02, ASI03 |
+| 7 | Remote MCP Server (Workers) | LLM06 | ASI05 |
 | 8 | Audit logging | — | ASI10, ASI08 |
 
 ### UC3 OWASP Mappings
