@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <!-- Primary Meta Tags -->
+  <title>AI Builder - Cloudflare AI Interactive Demos (Unofficial)</title>
+  <meta name="title" content="AI Builder - Cloudflare AI Interactive Demos (Unofficial)">
+  <meta name="description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of building AI applications on Cloudflare — API management, dynamic routing, RAG, voice agents, chat, scheduling, and web browsing. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="keywords" content="Cloudflare, AI builder, AI Gateway, Agents SDK, RAG, voice AI, AI chat, Workers AI, Vectorize, AI Search, Browser Rendering, educational demo">
+  <meta name="author" content="Community Demo (Not affiliated with Cloudflare.)">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="color-scheme" content="dark">
+
+  <!-- Canonical URL -->
+  <link rel="canonical" href="https://ai-security.automatic-demo.com/ai-builder.html">
+
+  <!-- Open Graph / Facebook -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://ai-security.automatic-demo.com/ai-builder.html">
+  <meta property="og:title" content="AI Builder - Cloudflare AI Interactive Demos (Unofficial)">
+  <meta property="og:description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of building AI applications on Cloudflare — API management, dynamic routing, RAG, voice agents, chat, scheduling, and web browsing. Not affiliated with or endorsed by Cloudflare.">
+  <meta property="og:image" content="https://ai-security.automatic-demo.com/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:site_name" content="Cloudflare AI (Unofficial Demo)">
+  <meta property="og:locale" content="en_US">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="https://ai-security.automatic-demo.com/ai-builder.html">
+  <meta name="twitter:title" content="AI Builder - Cloudflare AI Interactive Demos (Unofficial)">
+  <meta name="twitter:description" content="Unofficial educational demo: explore 7 interactive visual walkthroughs of building AI applications on Cloudflare. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="twitter:image" content="https://ai-security.automatic-demo.com/og-image.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" href="/favicon.png">
+
+  <!-- Web App Manifest -->
+  <link rel="manifest" href="/site.webmanifest">
+
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/base.css">
+
+  <style>
+    /* === Landing Page Styles === */
+    .landing {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .landing-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: clamp(0.75rem, 2vw, 1.5rem) clamp(1rem, 3vw, 2rem);
+      padding-left: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-left));
+      padding-right: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-right));
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .home-link {
+      font-size: clamp(0.75rem, 1.4vw, 0.8125rem);
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-decoration: none;
+      white-space: nowrap;
+      margin-right: 0.5rem;
+      opacity: 0.8;
+      transition: color var(--transition-fast), opacity var(--transition-fast);
+    }
+
+    .home-link:hover {
+      color: var(--cf-orange);
+      opacity: 1;
+    }
+
+    .landing-logo {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .landing-logo svg {
+      width: clamp(24px, 4vw, 32px);
+      height: clamp(24px, 4vw, 32px);
+    }
+
+    .landing-logo span {
+      font-size: clamp(0.875rem, 2vw, 1.125rem);
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .landing-main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: clamp(1.5rem, 4vw, 3rem) clamp(1rem, 3vw, 2rem);
+      padding-left: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-left));
+      padding-right: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-right));
+    }
+
+    .landing-title {
+      text-align: center;
+      margin-bottom: 0.5rem;
+      color: var(--text-primary);
+      font-size: clamp(1.25rem, 4vw, 2rem);
+    }
+
+    .landing-title span { color: var(--cf-orange); }
+
+    .landing-subtitle {
+      text-align: center;
+      color: var(--text-secondary);
+      font-size: clamp(0.8125rem, 2vw, 1rem);
+      max-width: 600px;
+      margin-bottom: clamp(1.5rem, 4vw, 3rem);
+      line-height: 1.6;
+    }
+
+    .cards-section {
+      width: 100%;
+      max-width: 1100px;
+      margin-bottom: clamp(1.25rem, 3vw, 2rem);
+    }
+
+    .cards-section:last-child { margin-bottom: 0; }
+
+    .cards-section-header {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-bottom: clamp(0.5rem, 1.5vw, 0.875rem);
+      padding-left: 0.125rem;
+    }
+
+    .cards-section-number {
+      font-size: clamp(0.5rem, 1vw, 0.625rem);
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--cf-orange);
+      background: rgba(243, 128, 32, 0.1);
+      border: 1px solid rgba(243, 128, 32, 0.2);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+    }
+
+    .cards-section-title {
+      font-size: clamp(0.75rem, 1.6vw, 0.9375rem);
+      font-weight: 600;
+      color: var(--text-secondary);
+    }
+
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+      gap: clamp(0.75rem, 2vw, 1.25rem);
+      width: 100%;
+    }
+
+    .uc-card {
+      display: flex;
+      flex-direction: column;
+      padding: clamp(1rem, 2.5vw, 1.5rem);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--border-color);
+      background: var(--bg-card);
+      transition: all var(--transition-base);
+      text-decoration: none;
+      color: inherit;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .uc-card:hover {
+      border-color: var(--cf-orange);
+      box-shadow: var(--shadow-glow-orange);
+      transform: translateY(-2px);
+      opacity: 1;
+    }
+
+    @media (hover: none) { .uc-card:hover { transform: none; } }
+    .uc-card:active { transform: scale(0.98); }
+
+    .uc-card-number {
+      font-size: clamp(0.5625rem, 1.2vw, 0.6875rem);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--cf-orange);
+      margin-bottom: 0.5rem;
+    }
+
+    .uc-card h3 {
+      font-size: clamp(0.9375rem, 2vw, 1.125rem);
+      color: var(--text-primary);
+      margin-bottom: 0.375rem;
+      line-height: 1.35;
+    }
+
+    .uc-card p {
+      font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+      color: var(--text-secondary);
+      line-height: 1.6;
+      margin-bottom: 0.75rem;
+      flex: 1;
+    }
+
+    .uc-card-products {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .product-tag {
+      font-size: clamp(0.5rem, 1vw, 0.625rem);
+      padding: 0.15rem 0.4rem;
+      border-radius: 3px;
+      background: var(--bg-tertiary);
+      color: var(--text-muted);
+      border: 1px solid var(--border-light);
+    }
+
+    .uc-card-cta {
+      display: flex;
+      align-items: center;
+      gap: 0.375rem;
+      font-size: clamp(0.6875rem, 1.5vw, 0.8125rem);
+      font-weight: 500;
+      color: var(--cf-orange);
+    }
+
+    .uc-card-cta .arrow { transition: transform var(--transition-fast); }
+    .uc-card:hover .uc-card-cta .arrow { transform: translateX(4px); }
+
+    .uc-card-flow-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: var(--radius-sm);
+      font-size: clamp(0.5625rem, 1.1vw, 0.6875rem);
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      width: fit-content;
+    }
+
+    .uc-card-flow-type.human-ai {
+      background: rgba(59, 130, 246, 0.1);
+      color: #60A5FA;
+      border: 1px solid rgba(59, 130, 246, 0.2);
+    }
+
+    .uc-card-flow-type.agent-resource {
+      background: rgba(16, 185, 129, 0.1);
+      color: #34D399;
+      border: 1px solid rgba(16, 185, 129, 0.2);
+    }
+
+    .uc-card-flow-type.both-flows {
+      background: rgba(139, 92, 246, 0.1);
+      color: #A78BFA;
+      border: 1px solid rgba(139, 92, 246, 0.2);
+    }
+
+    .landing-footer {
+      padding: clamp(0.625rem, 1.5vw, 1rem) clamp(1rem, 3vw, 2rem);
+      padding-bottom: max(clamp(0.625rem, 1.5vw, 1rem), env(safe-area-inset-bottom));
+      padding-left: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-left));
+      padding-right: max(clamp(1rem, 3vw, 2rem), env(safe-area-inset-right));
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+      font-size: clamp(0.6875rem, 1.2vw, 0.8125rem);
+      color: var(--text-muted);
+    }
+
+    .landing-footer a { color: var(--text-secondary); }
+
+    @media (max-width: 30rem) {
+      .cards-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .uc-card { padding: 1.25rem; }
+      .uc-card h3 { font-size: 1.0625rem; }
+      .uc-card p { font-size: 0.875rem; line-height: 1.6; }
+      .uc-card-cta { font-size: 0.875rem; min-height: 2.75rem; display: flex; align-items: center; }
+      .product-tag { font-size: 0.625rem; padding: 0.2rem 0.5rem; }
+      .landing-title { font-size: 1.5rem; }
+      .landing-subtitle { font-size: 0.9375rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="landing">
+    <header class="landing-header">
+      <a class="home-link" href="/">&larr; Home</a>
+      <div class="landing-logo">
+        <svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect width="32" height="32" rx="8" fill="#F38020"/>
+          <path d="M22.4 17.6l-1.2-4.1c-.1-.4-.4-.7-.8-.8l-9.8-1.2c-.1 0-.2 0-.2.1-.1.1-.1.1-.1.2l-.2.6c0 .1 0 .2.1.3.1.1.2.1.3.1l7.5.9-2.2 6.4c-.1.2 0 .3.1.4.1.1.3.1.4 0l5.9-2.6c.2-.1.3-.2.2-.3z" fill="white"/>
+          <path d="M17.8 19.5l1.3-3.8c.1-.3 0-.6-.1-.9-.2-.2-.5-.4-.8-.4l-6.8-.8c-.1 0-.1 0-.2.1 0 0-.1.1-.1.2l-.1.5c0 .1 0 .1.1.2 0 0 .1.1.2.1l5.2.6-1.5 4.2c0 .1 0 .2.1.3.1.1.2.1.3 0l2.2-1c.1 0 .2-.1.2-.3z" fill="white" opacity=".7"/>
+        </svg>
+        <span>AI Builder</span>
+      </div>
+    </header>
+
+    <main class="landing-main">
+      <h1 class="landing-title">Cloudflare <span>AI Builder</span></h1>
+      <p class="landing-subtitle">
+        Interactive visual walkthroughs of how to build AI applications and agents on Cloudflare &mdash; from API key management and dynamic routing to RAG pipelines, voice agents, persistent chat, autonomous scheduling, and web-browsing agents.
+      </p>
+
+      <!-- Section 1: Developing with AI -->
+      <div class="cards-section">
+        <div class="cards-section-header">
+          <span class="cards-section-number">8 &ndash; 9</span>
+          <span class="cards-section-title">Developing with AI</span>
+        </div>
+        <div class="cards-grid">
+
+        <!-- UC8 -->
+        <a class="uc-card" href="/use-cases/uc8-unified-billing.html">
+          <span class="uc-card-number">Use Case 8</span>
+          <span class="uc-card-flow-type human-ai">&#128100; App / Dev &rarr; Cloudflare &rarr; &#129302; AI Provider</span>
+          <h3>API Key Management &amp; Unified Billing</h3>
+          <p>Centralize AI provider credentials via BYOK (Secrets Store) or eliminate them entirely with Unified Billing &mdash; single Cloudflare invoice, spend limits, and Zero Data Retention.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">AI Gateway</span>
+            <span class="product-tag">BYOK</span>
+            <span class="product-tag">Secrets Store</span>
+            <span class="product-tag">Unified Billing</span>
+            <span class="product-tag">Analytics</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC9 -->
+        <a class="uc-card" href="/use-cases/uc9-dynamic-routing.html">
+          <span class="uc-card-number">Use Case 9</span>
+          <span class="uc-card-flow-type both-flows">&#128100; App / Admin &rarr; Cloudflare &rarr; &#129302; AI Provider</span>
+          <h3>Dynamic Routing</h3>
+          <p>Intelligently route AI requests across providers with conditional logic, A/B percentage splits, per-key rate and budget limits, and automatic multi-provider fallback &mdash; all without code changes.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">AI Gateway</span>
+            <span class="product-tag">Dynamic Routing</span>
+            <span class="product-tag">Rate Limiting</span>
+            <span class="product-tag">Budget Limits</span>
+            <span class="product-tag">BYOK</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        </div>
+      </div>
+
+      <!-- Section 2: Building AI Applications -->
+      <div class="cards-section">
+        <div class="cards-section-header">
+          <span class="cards-section-number">10 &ndash; 14</span>
+          <span class="cards-section-title">Building AI Applications</span>
+        </div>
+        <div class="cards-grid">
+
+        <!-- UC10 -->
+        <a class="uc-card" href="/use-cases/uc10-rag.html">
+          <span class="uc-card-number">Use Case 10</span>
+          <span class="uc-card-flow-type human-ai">&#128100; User / App &rarr; Cloudflare &rarr; &#129302; LLM</span>
+          <h3>RAG Knowledge Base</h3>
+          <p>Build retrieval-augmented generation pipelines &mdash; automated document indexing, semantic vector search, and grounded LLM responses &mdash; with AI Search, Vectorize, Workers AI, and Workers.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">AI Search</span>
+            <span class="product-tag">Vectorize</span>
+            <span class="product-tag">Workers AI</span>
+            <span class="product-tag">Workers</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC11 -->
+        <a class="uc-card" href="/use-cases/uc11-voice-agent.html">
+          <span class="uc-card-number">Use Case 11</span>
+          <span class="uc-card-flow-type human-ai">&#128100; User / Phone &rarr; Cloudflare &rarr; &#129302; STT / TTS</span>
+          <h3>Voice AI Agent</h3>
+          <p>Build real-time voice agents with speech-to-text, LLM turn processing, and sentence-chunked TTS synthesis over WebSocket &mdash; with persistent conversation history and Twilio telephony support.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Agents SDK</span>
+            <span class="product-tag">Workers AI (STT/TTS)</span>
+            <span class="product-tag">Durable Objects</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC12 -->
+        <a class="uc-card" href="/use-cases/uc12-ai-chat.html">
+          <span class="uc-card-number">Use Case 12</span>
+          <span class="uc-card-flow-type human-ai">&#128100; Browser Client &rarr; Cloudflare &rarr; &#129302; LLM</span>
+          <h3>Persistent AI Chat Agent</h3>
+          <p>Build stateful AI chat applications with automatic message persistence, resumable streams, real-time state sync via useAgentChat, and human-in-the-loop tool approval &mdash; all powered by AIChatAgent and Durable Objects.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">AIChatAgent</span>
+            <span class="product-tag">Durable Objects</span>
+            <span class="product-tag">SQLite State</span>
+            <span class="product-tag">Workers AI</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC13 -->
+        <a class="uc-card" href="/use-cases/uc13-scheduled-agent.html">
+          <span class="uc-card-number">Use Case 13</span>
+          <span class="uc-card-flow-type agent-resource">&#129302; Agent &rarr; Cloudflare &rarr; &#128230; Services</span>
+          <h3>Autonomous Scheduled Agent</h3>
+          <p>Build agents that schedule and execute their own work &mdash; delayed, datetime, cron, or interval &mdash; using Durable Object alarms and SQLite-persisted task queues, with AI-assisted natural language scheduling.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Agents SDK</span>
+            <span class="product-tag">DO Alarms</span>
+            <span class="product-tag">SQLite</span>
+            <span class="product-tag">Workers AI</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- UC14 -->
+        <a class="uc-card" href="/use-cases/uc14-browser-agent.html">
+          <span class="uc-card-number">Use Case 14</span>
+          <span class="uc-card-flow-type agent-resource">&#129302; Agent &rarr; Cloudflare &rarr; &#127760; Web</span>
+          <h3>Web-Browsing AI Agent</h3>
+          <p>Give AI agents full Chrome DevTools Protocol access via Browser Rendering &mdash; scrape rendered SPAs, capture screenshots and PDFs, inspect accessibility trees, and automate web workflows from natural language instructions.</p>
+          <div class="uc-card-products">
+            <span class="product-tag">Agents SDK</span>
+            <span class="product-tag">Browser Rendering</span>
+            <span class="product-tag">Workers AI</span>
+            <span class="product-tag">R2</span>
+          </div>
+          <span class="uc-card-cta">Explore flow <span class="arrow">&rarr;</span></span>
+        </a>
+
+        </div>
+      </div>
+    </main>
+
+    <footer class="landing-footer">
+      <p>For educational and demonstration purposes only. Not an official Cloudflare demo.</p>
+      <p style="margin-top: 0.375rem;">Deployed on <a href="https://developers.cloudflare.com/workers/static-assets/" target="_blank" rel="noopener">Workers Static Assets</a> &middot; <a href="https://github.com/DavidJKTofan/cf-ai-security-visual-demo" target="_blank" rel="noopener">GitHub</a></p>
+    </footer>
+  </div>
+</body>
+</html>

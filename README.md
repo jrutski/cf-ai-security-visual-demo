@@ -1,6 +1,6 @@
 # Cloudflare AI Security - Interactive Visual Demo
 
-An interactive, modular frontend web application that visualizes 9 Cloudflare AI security use cases. Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
+An interactive, modular frontend web application that visualizes 14 Cloudflare AI use cases. Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
 
 ## Use Cases
 
@@ -28,6 +28,16 @@ An interactive, modular frontend web application that visualizes 9 Cloudflare AI
 | 8 | **API Key Management & Unified Billing** | AI Gateway (BYOK, Secrets Store, Unified Billing, Spend Limits, ZDR, Analytics) |
 | 9 | **Dynamic Routing** | AI Gateway (Dynamic Routing, Conditional, Percentage Split, Rate/Budget Limits, BYOK) |
 
+### Building AI Applications
+
+| # | Use Case | Cloudflare Products |
+|---|----------|-------------------|
+| 10 | **RAG Knowledge Base** | AI Search, Vectorize, Workers AI, Workers |
+| 11 | **Voice AI Agent** | Agents SDK (@cloudflare/voice), Workers AI (Whisper STT/TTS), Durable Objects |
+| 12 | **Persistent AI Chat Agent** | Agents SDK (AIChatAgent), Durable Objects, SQLite State, Workers AI |
+| 13 | **Autonomous Scheduled Agent** | Agents SDK (Schedule), Durable Object Alarms, SQLite, Workers AI |
+| 14 | **Web-Browsing AI Agent** | Agents SDK, Browser Rendering (CDP), Workers AI, R2 |
+
 ## How It Works
 
 Each use case presents an interactive diagram with three spatial columns:
@@ -42,15 +52,15 @@ Users can:
 - **Read the side panel** for each step's title, acting product, description, and "why it matters" context
 
 Three primary flow archetypes are visualized:
-1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4, UC8, UC9)
-2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5)
+1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4, UC8, UC9, UC10, UC11, UC12)
+2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5, UC13, UC14)
 3. **Agent -> Agent**: AI-to-AI orchestration with identity, durable execution, and shared infrastructure (UC6, UC7)
 
 ## Project Structure
 
 ```
 src/
-  index.html                          Landing page with 9 use case cards
+  index.html                          Landing page with 14 use case cards
   use-cases/
     uc1-genai-workforce.html          UC1: Secure Workforce Use of GenAI
     uc2-govern-agents.html            UC2: Govern AI Agents (MCP)
@@ -61,6 +71,11 @@ src/
     uc7-multi-agent.html              UC7: Secure AI-to-AI Communication
     uc8-unified-billing.html          UC8: API Key Management & Unified Billing
     uc9-dynamic-routing.html          UC9: Dynamic Routing
+    uc10-rag.html                     UC10: RAG Knowledge Base
+    uc11-voice-agent.html             UC11: Voice AI Agent
+    uc12-ai-chat.html                 UC12: Persistent AI Chat Agent
+    uc13-scheduled-agent.html         UC13: Autonomous Scheduled Agent
+    uc14-browser-agent.html           UC14: Web-Browsing AI Agent
   components/
     flow-engine.js                    Shared step-through animation controller
     tooltip.js                        Per-node contextual overlay
@@ -79,6 +94,11 @@ src/
     uc7-steps.js                      UC7 nodes, edges, step definitions
     uc8-steps.js                      UC8 nodes, edges, step definitions
     uc9-steps.js                      UC9 nodes, edges, step definitions
+    uc10-steps.js                     UC10 nodes, edges, step definitions
+    uc11-steps.js                     UC11 nodes, edges, step definitions
+    uc12-steps.js                     UC12 nodes, edges, step definitions
+    uc13-steps.js                     UC13 nodes, edges, step definitions
+    uc14-steps.js                     UC14 nodes, edges, step definitions
 wrangler.jsonc                        Cloudflare Workers Static Assets config
 package.json
 ```
@@ -163,6 +183,10 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 - [AI Gateway Unified Billing](https://developers.cloudflare.com/ai-gateway/features/unified-billing/)
 - [AI Gateway Dynamic Routing](https://developers.cloudflare.com/ai-gateway/features/dynamic-routing/)
 - [Agents SDK](https://developers.cloudflare.com/agents/)
+- [AIChatAgent](https://developers.cloudflare.com/agents/api-reference/chat-agents/)
+- [Voice Agents](https://developers.cloudflare.com/agents/api-reference/voice/)
+- [Schedule Tasks](https://developers.cloudflare.com/agents/api-reference/schedule-tasks/)
+- [Browse the Web (Browser Tools)](https://developers.cloudflare.com/agents/api-reference/browse-the-web/)
 - [MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
 
 **Developer Platform**
@@ -171,6 +195,9 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 - [Sandbox SDK](https://developers.cloudflare.com/sandbox/)
 - [Workflows](https://developers.cloudflare.com/workflows/)
 - [AI Search](https://developers.cloudflare.com/ai-search/)
+- [Vectorize](https://developers.cloudflare.com/vectorize/)
+- [Workers AI](https://developers.cloudflare.com/workers-ai/)
+- [Browser Rendering](https://developers.cloudflare.com/browser-rendering/)
 
 **Infrastructure**
 - [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)

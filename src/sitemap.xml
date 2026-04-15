@@ -2,9 +2,21 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://ai-security.automatic-demo.com/</loc>
-    <lastmod>2026-03-01</lastmod>
-    <changefreq>yearly</changefreq>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/ai-security.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/ai-builder.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.95</priority>
   </url>
   <url>
     <loc>https://ai-security.automatic-demo.com/use-cases/uc1-genai-workforce.html</loc>
@@ -38,6 +50,36 @@
   </url>
   <url>
     <loc>https://ai-security.automatic-demo.com/use-cases/uc9-dynamic-routing.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/use-cases/uc10-rag.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/use-cases/uc11-voice-agent.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/use-cases/uc12-ai-chat.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/use-cases/uc13-scheduled-agent.html</loc>
+    <lastmod>2026-04-15</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://ai-security.automatic-demo.com/use-cases/uc14-browser-agent.html</loc>
     <lastmod>2026-04-15</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.8</priority>
