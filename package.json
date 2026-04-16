@@ -9,10 +9,6 @@
     "start": "wrangler dev"
   },
   "devDependencies": {
-<<<<<<< HEAD
     "wrangler": "^4.83.0"
-=======
-    "wrangler": "^4.81.0"
->>>>>>> upstream/main
   }
 }

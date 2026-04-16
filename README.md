@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Cloudflare AI - Interactive Visual Demo
 
 An interactive, modular frontend web application that visualizes 14 Cloudflare AI use cases across two categories:
@@ -7,11 +6,6 @@ An interactive, modular frontend web application that visualizes 14 Cloudflare A
 - **[AI Builder](src/ai-builder.html)** (UC8–14) — how to build AI applications on Cloudflare: API key management, dynamic routing, RAG pipelines, voice agents, persistent chat, autonomous scheduling, and web-browsing agents.
 
 Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
-=======
-# Cloudflare AI Security - Interactive Visual Demo
-
-An interactive, modular frontend web application that visualizes 7 Cloudflare AI security use cases. Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
->>>>>>> upstream/main
 
 ## Use Cases
 
@@ -32,7 +26,6 @@ An interactive, modular frontend web application that visualizes 7 Cloudflare AI
 | 6 | **Secure AI Code Execution** | Dynamic Workers (Worker Loader), Codemode, Workers RPC, AI Gateway, Agents SDK |
 | 7 | **Secure AI-to-AI Communication** | Agents SDK (Durable Objects), Access + mTLS, MCP Server Portals, Workflows, AI Search, Queues |
 
-<<<<<<< HEAD
 ### Developing with AI
 
 | # | Use Case | Cloudflare Products |
@@ -50,8 +43,6 @@ An interactive, modular frontend web application that visualizes 7 Cloudflare AI
 | 13 | **Autonomous Scheduled Agent** | Agents SDK (Schedule), Durable Object Alarms, SQLite, Workers AI |
 | 14 | **Web-Browsing AI Agent** | Agents SDK, Browser Rendering (CDP), Workers AI, R2 |
 
-=======
->>>>>>> upstream/main
 ## How It Works
 
 Each use case presents an interactive diagram with three spatial columns:
@@ -66,24 +57,15 @@ Users can:
 - **Read the side panel** for each step's title, acting product, description, and "why it matters" context
 
 Three primary flow archetypes are visualized:
-<<<<<<< HEAD
 1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4, UC8, UC9, UC10, UC11, UC12)
 2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5, UC13, UC14)
-=======
-1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4)
-2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5)
->>>>>>> upstream/main
 3. **Agent -> Agent**: AI-to-AI orchestration with identity, durable execution, and shared infrastructure (UC6, UC7)
 
 ## Project Structure
 
 ```
 src/
-<<<<<<< HEAD
   index.html                          Landing page with 14 use case cards
-=======
-  index.html                          Landing page with 7 use case cards
->>>>>>> upstream/main
   use-cases/
     uc1-genai-workforce.html          UC1: Secure Workforce Use of GenAI
     uc2-govern-agents.html            UC2: Govern AI Agents (MCP)
@@ -92,7 +74,6 @@ src/
     uc5-self-hosted-agents.html       UC5: Secure Self-Hosted AI Agents
     uc6-code-execution.html           UC6: Secure AI Code Execution
     uc7-multi-agent.html              UC7: Secure AI-to-AI Communication
-<<<<<<< HEAD
     uc8-unified-billing.html          UC8: API Key Management & Unified Billing
     uc9-dynamic-routing.html          UC9: Dynamic Routing
     uc10-rag.html                     UC10: RAG Knowledge Base
@@ -100,8 +81,6 @@ src/
     uc12-ai-chat.html                 UC12: Persistent AI Chat Agent
     uc13-scheduled-agent.html         UC13: Autonomous Scheduled Agent
     uc14-browser-agent.html           UC14: Web-Browsing AI Agent
-=======
->>>>>>> upstream/main
   components/
     flow-engine.js                    Shared step-through animation controller
     tooltip.js                        Per-node contextual overlay
@@ -118,7 +97,6 @@ src/
     uc5-steps.js                      UC5 nodes, edges, step definitions
     uc6-steps.js                      UC6 nodes, edges, step definitions
     uc7-steps.js                      UC7 nodes, edges, step definitions
-<<<<<<< HEAD
     uc8-steps.js                      UC8 nodes, edges, step definitions
     uc9-steps.js                      UC9 nodes, edges, step definitions
     uc10-steps.js                     UC10 nodes, edges, step definitions
@@ -126,8 +104,6 @@ src/
     uc12-steps.js                     UC12 nodes, edges, step definitions
     uc13-steps.js                     UC13 nodes, edges, step definitions
     uc14-steps.js                     UC14 nodes, edges, step definitions
-=======
->>>>>>> upstream/main
 wrangler.jsonc                        Cloudflare Workers Static Assets config
 package.json
 ```
@@ -140,11 +116,7 @@ package.json
 
 ## Deployment
 
-<<<<<<< HEAD
 [![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/jrutski/cf-ai-security-visual-demo)
-=======
-[![Deploy to Cloudflare](https://deploy.workers.cloudflare.com/button)](https://deploy.workers.cloudflare.com/?url=https://github.com/DavidJKTofan/cf-ai-security-visual-demo)
->>>>>>> upstream/main
 
 This project deploys as a purely static site via [Cloudflare Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/). No Worker script is needed - Wrangler serves the `src/` directory directly from Cloudflare's edge network.
 
@@ -212,7 +184,6 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 **AI Gateway & Agents**
 - [AI Gateway Documentation](https://developers.cloudflare.com/ai-gateway/)
 - [AI Gateway Worker Binding Methods](https://developers.cloudflare.com/ai-gateway/integrations/worker-binding-methods/)
-<<<<<<< HEAD
 - [AI Gateway BYOK (Secrets Store)](https://developers.cloudflare.com/ai-gateway/configuration/bring-your-own-keys/)
 - [AI Gateway Unified Billing](https://developers.cloudflare.com/ai-gateway/features/unified-billing/)
 - [AI Gateway Dynamic Routing](https://developers.cloudflare.com/ai-gateway/features/dynamic-routing/)
@@ -221,9 +192,6 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 - [Voice Agents](https://developers.cloudflare.com/agents/api-reference/voice/)
 - [Schedule Tasks](https://developers.cloudflare.com/agents/api-reference/schedule-tasks/)
 - [Browse the Web (Browser Tools)](https://developers.cloudflare.com/agents/api-reference/browse-the-web/)
-=======
-- [Agents SDK](https://developers.cloudflare.com/agents/)
->>>>>>> upstream/main
 - [MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
 
 **Developer Platform**
@@ -232,12 +200,9 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 - [Sandbox SDK](https://developers.cloudflare.com/sandbox/)
 - [Workflows](https://developers.cloudflare.com/workflows/)
 - [AI Search](https://developers.cloudflare.com/ai-search/)
-<<<<<<< HEAD
 - [Vectorize](https://developers.cloudflare.com/vectorize/)
 - [Workers AI](https://developers.cloudflare.com/workers-ai/)
 - [Browser Rendering](https://developers.cloudflare.com/browser-rendering/)
-=======
->>>>>>> upstream/main
 
 **Infrastructure**
 - [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
