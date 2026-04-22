@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>Artifacts: Git-Compatible Versioned Storage - Cloudflare AI (Unofficial)</title>
+  <meta name="description" content="Unofficial educational demo: interactive flow diagram of Cloudflare Artifacts — Git-native versioned storage for agents. Import, fork, commit, and time-travel code, config, and session state. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="robots" content="index, follow">
+  <meta name="theme-color" content="#0d1117">
+  <meta name="color-scheme" content="dark">
+  <link rel="canonical" href="https://orange-ai.serioustek.net/use-cases/uc20-artifacts.html">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://orange-ai.serioustek.net/use-cases/uc20-artifacts.html">
+  <meta property="og:title" content="Artifacts: Git-Compatible Versioned Storage - Cloudflare AI (Unofficial)">
+  <meta property="og:description" content="Unofficial educational demo: interactive flow diagram of Cloudflare Artifacts — Git-native versioned storage for agents. Import, fork, commit, and time-travel code, config, and session state.">
+  <meta property="og:image" content="https://orange-ai.serioustek.net/og-image.png">
+  <meta property="og:site_name" content="Cloudflare AI (Unofficial Demo)">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="icon" type="image/png" sizes="512x512" href="/favicon.png">
+  <link rel="apple-touch-icon" href="/favicon.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="stylesheet" href="/styles/theme.css">
+  <link rel="stylesheet" href="/styles/base.css">
+  <link rel="stylesheet" href="/styles/diagram.css">
+</head>
+<body>
+  <div class="diagram-page">
+    <header class="diagram-header">
+      <a class="back-link" href="/ai-builder.html">&larr; AI Builder</a>
+      <span class="uc-badge">UC 20</span>
+      <h1>Artifacts: Git-Compatible Versioned Storage</h1>
+    </header>
+
+    <div class="flow-archetype-labels">
+      <div class="archetype-label">
+        <span class="archetype-arrow agent-resource"></span>
+        Agent &rarr; Artifacts Binding &rarr; Versioned Repo &rarr; Git Protocol &rarr; Any Git Client / Fork
+      </div>
+    </div>
+
+    <div class="diagram-content">
+      <div class="diagram-canvas">
+        <div class="flow-container">
+          <svg class="flow-edges"></svg>
+          <div class="flow-columns">
+            <div class="flow-column col-left">
+              <div class="column-label">Agent / Developer</div>
+            </div>
+            <div class="flow-column col-center">
+              <div class="column-label">Artifacts Service</div>
+            </div>
+            <div class="flow-column col-right">
+              <div class="column-label">Output</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="diagram-panel">
+        <div class="panel-controls">
+          <button class="btn btn-primary" data-action="play">Play</button>
+          <button class="btn btn-secondary" data-action="prev" disabled>&larr;</button>
+          <button class="btn btn-secondary" data-action="next">&rarr;</button>
+          <button class="btn btn-secondary" data-action="reset">Reset</button>
+          <span class="step-counter">0 / 7</span>
+        </div>
+        <div class="panel-step-info">
+          <div class="step-info-placeholder">
+            <span class="placeholder-icon">&#9654;</span>
+            <p>Press <strong>Play</strong> or use the <strong>arrow keys</strong> to step through the request flow.</p>
+            <p style="font-size: 0.8125rem; margin-top: 0.5rem; color: var(--text-muted);">Tap any node for details.</p>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <footer class="diagram-legend" id="legend"></footer>
+  </div>
+
+  <script type="module">
+    import { FlowEngine } from '/components/flow-engine.js';
+    import { Tooltip } from '/components/tooltip.js';
+    import { Legend } from '/components/legend.js';
+    import { uc20 } from '/data/uc20-steps.js';
+
+    const tooltip = new Tooltip();
+    const legend = new Legend(document.getElementById('legend'));
+
+    const engine = new FlowEngine({
+      steps: uc20.steps,
+      nodes: uc20.nodes,
+      edges: uc20.edges,
+    });
+
+    engine.mount(
+      document.querySelector('.diagram-canvas'),
+      document.querySelector('.diagram-panel')
+    );
+  </script>
+</body>
+</html>

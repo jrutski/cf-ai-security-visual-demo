@@ -7,7 +7,7 @@
   <!-- Primary Meta Tags -->
   <title>Cloudflare AI - Interactive Visual Demos (Unofficial)</title>
   <meta name="title" content="Cloudflare AI - Interactive Visual Demos (Unofficial)">
-  <meta name="description" content="Unofficial educational demo: explore 14 interactive visual walkthroughs of Cloudflare AI — security and AI builder use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="description" content="Unofficial educational demo: explore 20 interactive visual walkthroughs of Cloudflare AI — security, AI builder, and AI optimization use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta name="keywords" content="Cloudflare, AI security, AI builder, AI Gateway, Zero Trust, DLP, Agents SDK, RAG, voice AI, Workers AI, educational demo">
   <meta name="author" content="Community Demo (Not affiliated with Cloudflare.)">
   <meta name="robots" content="index, follow">
@@ -21,7 +21,7 @@
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://orange-ai.serioustek.net/">
   <meta property="og:title" content="Cloudflare AI - Interactive Visual Demos (Unofficial)">
-  <meta property="og:description" content="Unofficial educational demo: explore 14 interactive visual walkthroughs of Cloudflare AI — security and AI builder use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta property="og:description" content="Unofficial educational demo: explore 20 interactive visual walkthroughs of Cloudflare AI — security, AI builder, and AI optimization use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta property="og:image" content="https://orange-ai.serioustek.net/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -32,7 +32,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://orange-ai.serioustek.net/">
   <meta name="twitter:title" content="Cloudflare AI - Interactive Visual Demos (Unofficial)">
-  <meta name="twitter:description" content="Unofficial educational demo: explore 14 interactive visual walkthroughs of Cloudflare AI — security and AI builder use cases. Not affiliated with or endorsed by Cloudflare.">
+  <meta name="twitter:description" content="Unofficial educational demo: explore 20 interactive visual walkthroughs of Cloudflare AI — security, AI builder, and AI optimization use cases. Not affiliated with or endorsed by Cloudflare.">
   <meta name="twitter:image" content="https://orange-ai.serioustek.net/og-image.png">
   
   <!-- Favicon -->
@@ -130,10 +130,10 @@
     /* === Category Cards === */
     .category-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
       gap: clamp(1rem, 2.5vw, 1.75rem);
       width: 100%;
-      max-width: 840px;
+      max-width: 1100px;
     }
 
     .category-card {
@@ -295,7 +295,7 @@
         <!-- AI Builder -->
         <a class="category-card" href="/ai-builder.html">
           <div class="category-card-icon">&#9889;</div>
-          <span class="category-card-count">7 Use Cases</span>
+          <span class="category-card-count">11 Use Cases</span>
           <h2>AI Builder</h2>
           <p>Learn how to build AI applications on Cloudflare &mdash; API key management, dynamic routing, RAG knowledge bases, voice agents, persistent chat with memory, autonomous scheduled agents, and web-browsing agents.</p>
           <div class="category-card-tags">
@@ -305,6 +305,22 @@
             <span class="product-tag">Vectorize</span>
             <span class="product-tag">Workers AI</span>
             <span class="product-tag">Browser Rendering</span>
+          </div>
+          <span class="category-card-cta">Explore use cases <span class="arrow">&rarr;</span></span>
+        </a>
+
+        <!-- AI Optimization -->
+        <a class="category-card" href="/ai-optimization.html">
+          <div class="category-card-icon">&#128300;</div>
+          <span class="category-card-count">2 Use Cases</span>
+          <h2>AI Optimization</h2>
+          <p>See how Cloudflare optimizes AI inference under the hood &mdash; lossless LLM weight compression (Unweight), prefill/decode disaggregation, prompt caching, Mooncake RDMA KV cache, and speculative decoding inside the Infire engine.</p>
+          <div class="category-card-tags">
+            <span class="product-tag">Workers AI</span>
+            <span class="product-tag">Infire</span>
+            <span class="product-tag">Unweight</span>
+            <span class="product-tag">Prompt Caching</span>
+            <span class="product-tag">Mooncake</span>
           </div>
           <span class="category-card-cta">Explore use cases <span class="arrow">&rarr;</span></span>
         </a>
