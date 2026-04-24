@@ -2,7 +2,7 @@
 
 ## Project Overview
 
-Interactive visual demo of 7 Cloudflare AI security use cases deployed as a purely static site via Cloudflare Workers Static Assets. Vanilla HTML/CSS/JS with ES modules — no build step, no frameworks.
+Interactive visual demo of 20 Cloudflare AI use cases across three sections (AI Security, AI Builder, AI Optimization), deployed as a purely static site via Cloudflare Workers Static Assets. Vanilla HTML/CSS/JS with ES modules — no build step, no frameworks.
 
 ## Key Architecture Decisions
 
@@ -28,7 +28,8 @@ wrangler.jsonc                        Workers Static Assets config
 |---------|---------|
 | `npm run dev` | Local development via `wrangler dev` |
 | `npm start` | Alias for `npm run dev` |
-| `npm run deploy` | Deploy to Cloudflare Workers Static Assets |
+| `npm run configure` | Replace `SITE_URL` across all HTML/XML files (reads from `.env`) |
+| `npm run deploy` | Run configure (if `SITE_URL` set), then deploy to Workers Static Assets |
 
 ## Cloudflare Workers Static Assets
 
@@ -44,8 +45,10 @@ For a purely static site, only `assets.directory` is needed in `wrangler.jsonc`.
 
 1. Create `src/data/ucN-steps.js` exporting `{ id, title, subtitle, nodes, edges, steps }`
 2. Create `src/use-cases/ucN-name.html` following the pattern of existing UC pages
-3. Add a card to `src/index.html`
-4. No changes needed to `flow-engine.js`, `tooltip.js`, or `legend.js`
+3. Add a card to the appropriate section landing page (`src/ai-security.html`, `src/ai-builder.html`, or `src/ai-optimization.html`)
+4. Update the use case count on `src/index.html` for the relevant category card
+5. Add the new URL to `src/sitemap.xml`
+6. No changes needed to `flow-engine.js`, `tooltip.js`, or `legend.js`
 
 ## Product Accuracy (MANDATORY)
 
@@ -289,6 +292,200 @@ Key product notes:
 - mTLS and service tokens for machine-to-machine agent authentication
 - Workflows: durable execution that survives failures, supports human-in-the-loop via waitForEvent
 - Queues: prevents cascading failures through asynchronous message passing
+
+## UC8 Flow Order (verified)
+
+UC8 ("API Key Management & Unified Billing") covers centralizing AI provider credentials and spend through AI Gateway.
+
+**Architecture:** Credentials (own keys or BYOK) → AI Gateway → Rate Limiting → Caching → DLP → LLM Providers → Analytics
+
+**Node layout:** 2 left (credentials-own, credentials-byok), 4 center (ai-gateway, rate-limiting, caching, dlp), 2 right (llm-providers, analytics)
+
+**Steps (7):** Unified endpoint setup → BYOK / Secrets Store credential management → Spend limits and rate controls → Unified billing across providers → Caching for cost reduction → DLP on outbound prompts → Analytics dashboard
+
+Key product notes:
+- AI Gateway Secrets Store: provider keys never leave Cloudflare
+- Unified Billing aggregates spend across all routed providers
+- Zero Data Residency (ZDR): prompts/responses not stored on Cloudflare infra when enabled
+
+## UC9 Flow Order (verified)
+
+UC9 ("Dynamic Routing") covers intelligently routing AI requests across providers using AI Gateway's routing engine.
+
+**Architecture:** Application → AI Gateway Endpoint → Routing Engine → Provider evaluation → Selected Provider
+
+**Node layout:** 1 left (app), 5 center (ai-gateway, routing-config, conditional-router, budget-tracker, fallback-engine), 1 right (selected-provider)
+
+**Steps (7):** Unified endpoint → Conditional routing rules → Percentage-split A/B routing → Per-key rate and budget limits → Automatic fallback on error/rate-limit → Multi-provider fan-out → Response returned
+
+Key product notes:
+- Dynamic Routing: conditions on model, headers, body fields
+- Fallback: automatic on 429/5xx or budget exhaustion
+- Budget limits: per-key spend caps with automatic cut-off
+
+## UC10 Flow Order (verified)
+
+UC10 ("RAG Knowledge Base") covers retrieval-augmented generation with AI Search, Vectorize, and Workers AI.
+
+**Architecture (two phases):**
+- Ingestion: Doc Source → AI Search (index) → Vectorize → R2
+- Query: User App → AI Search (search) → RAG Worker → Workers AI / External LLM
+
+**Node layout:** 2 left (user-app, doc-source), 4 center (ai-search, vectorize, rag-worker, workers-ai), 1 right (ext-llm)
+
+**Steps (7):** Document upload → Chunking and embedding via AI Search → Vector storage in Vectorize → User query → Hybrid retrieval (vector + keyword) → Context injection into prompt → Grounded LLM response
+
+## UC11 Flow Order (verified)
+
+UC11 ("Voice AI Agent") covers real-time voice agents with STT, LLM turns, and TTS over WebSocket.
+
+**Node layout:** 2 left (browser-user, telephony), 4 center (voice-agent, stt, llm-turn, tts), 2 right (workers-ai-voice, ext-voice-providers)
+
+**Steps (8):** WebSocket connection → Audio stream received → STT transcription (Whisper) → LLM turn processing → TTS synthesis (sentence-chunked) → Audio streamed back → Conversation history persisted (Durable Object) → Telephony bridge via Twilio
+
+Key product notes:
+- @cloudflare/voice SDK: withVoice / withVoiceInput mixins
+- Conversation history auto-persisted in SQLite via Sessions API
+- Interruption handling built in
+
+## UC12 Flow Order (verified)
+
+UC12 ("Persistent AI Chat Agent") covers stateful AI chat with AIChatAgent, Durable Objects, and real-time React sync.
+
+**Node layout:** 1 left (browser-client), 4 center (aichatagent, sqlite-state, stream-mgr, llm-chat), 2 right (tools, llm-providers)
+
+**Steps (7):** WebSocket connection → Message persisted to SQLite → Resumable stream manager → LLM call with history context → Tool calls (human-in-the-loop approval) → useAgentChat React hook receives state sync → Response delivered
+
+Key product notes:
+- AIChatAgent: extends Agent, auto-persists messages, supports useAgentChat
+- Resumable streams: survive connection drops
+- Human-in-the-loop: tool approvals via onToolCall hook
+
+## UC13 Flow Order (verified)
+
+UC13 ("Autonomous Scheduled Agent") covers agents that schedule and execute their own work using Durable Object alarms.
+
+**Node layout:** 2 left (user-trigger, llm-planner), 3 center (agent, task-scheduler, task-runner), 2 right (workers-ai-task, ext-services)
+
+**Steps (7):** Trigger received → LLM plans tasks from natural language → DO alarm registered → Alarm fires → Task runner executes → Workers AI assists with subtask processing → Result stored / user notified
+
+Key product notes:
+- schedule() API: delayed, datetime, cron, or interval
+- Tasks persisted in SQLite — survive Worker restarts
+- Agent self-schedules follow-up alarms based on task results
+
+## UC14 Flow Order (verified)
+
+UC14 ("Web-Browsing AI Agent") covers giving AI agents Chrome DevTools Protocol access via Browser Rendering.
+
+**Node layout:** 1 left (user-request), 4 center (ai-agent, browser-tools, browser-rendering, llm-reason), 2 right (target-web, artifacts)
+
+**Steps (7):** User sends natural language request → Agent plans browsing actions → Browser Rendering opens headless Chromium via CDP → Agent navigates / clicks / screenshots → LLM reasons over DOM / accessibility tree → Artifacts (screenshots, PDFs) saved to R2 → Result returned
+
+Key product notes:
+- @cloudflare/codemode browser tools: puppeteerEval, getPageContent, screenshot, pdf
+- CDP proxy: full DevTools Protocol access without managing Chrome infrastructure
+- Rendered SPA content available (not just static HTML)
+
+## UC15 Flow Order (verified — AI Optimization)
+
+UC15 ("Unweight: LLM Weight Compression") is a **Research** stage internal optimization — not a developer-facing API.
+
+**Architecture:** API request → Workers AI endpoint → Autotuner selects pipeline → HBM weight read + Huffman decompress → SMEM decoder → Tensor Cores → Token response
+
+**Node layout:** 1 left (api-request), 5 center (workers-ai, autotuner, hbm-weights, smem-decoder, tensor-cores), 1 right (token-response)
+
+**Steps (7):** Request arrives → Autotuner selects execution pipeline (4 variants based on batch/weight shape) → Huffman-coded exponent bytes decompressed on-the-fly → Weights reconstructed in SMEM → Matrix multiply on Tensor Cores → Token output
+
+Key product notes:
+- Lossless: 100% mathematically identical output to uncompressed weights
+- Up to 22% model footprint reduction on BF16 MLP weights
+- Runs inside Infire on H100 (Hopper) GPUs — not exposed as a config option
+- Status: **Research** (blog-only: blog.cloudflare.com/unweight-tensor-compression)
+
+## UC16 Flow Order (verified — AI Optimization)
+
+UC16 ("Workers AI Inference Engine: Speed at Scale") covers the Infire engine's performance optimizations.
+
+**Architecture:** Agent/App → Workers AI endpoint → Load Balancer → Prefill Server → KV Cache (Mooncake RDMA) → Decode Server → Token stream
+
+**Node layout:** 1 left (agent-app), 5 center (workers-ai-ep, load-balancer, prefill-server, kv-cache, decode-server), 1 right (token-stream)
+
+**Steps (7):** Request routing → Prefill/decode disaggregation → KV cache sharing via Mooncake Transfer Engine (RDMA) → Prompt caching with x-session-affinity header → Speculative decoding via EAGLE-3 → Token streaming → Response delivered
+
+Key product notes:
+- Prompt caching: GA, documented at developers.cloudflare.com/workers-ai/features/prompt-caching/
+- x-session-affinity header routes repeat prompts to same KV cache shard
+- EAGLE-3: NVIDIA speculative decoding draft model
+- Infire: Cloudflare's proprietary inference engine (not customer-configurable)
+
+## UC17 Flow Order (verified — AI Builder)
+
+UC17 ("Agent Memory") covers Cloudflare's managed persistent memory service for AI agents.
+
+**Architecture:** Agent → Memory Profile → Ingestion Pipeline → Memory Store ↔ Recall Engine → Synthesized Answer → Agent
+
+**Node layout:** 1 left (agent-app), 4 center (memory-profile, ingestion, memory-store, recall-engine), 1 right (memory-result)
+
+**Steps (7):** getProfile() → ingest() at context compaction → Extract/Verify/Classify/Vectorize memories → remember() direct tool use → recall() query → 5-channel RRF retrieval + synthesis → Inject memory context into agent
+
+Key product notes:
+- Memory types: Facts (stable), Events (timestamped), Instructions (procedures), Tasks (ephemeral)
+- Retrieval: full-text, fact-key, raw message, direct vector, HyDE vector — fused with RRF
+- Status: **GA** (developers.cloudflare.com/agents/concepts/memory/)
+- Distinct from UC12 (AIChatAgent SQLite — session-local history)
+
+## UC18 Flow Order (verified — AI Builder)
+
+UC18 ("Cloudflare Sandboxes") covers persistent, isolated AI agent environments.
+
+**Architecture:** Agent → Sandbox API (@cloudflare/sandbox) → Persistent Linux Container → Outbound Egress Proxy → External APIs / Preview URL
+
+**Node layout:** 1 left (agent-dev), 3 center (sandbox-api, sandbox-env, outbound-proxy), 2 right (preview-url, ext-services)
+
+**Steps (7):** getSandbox() by name → Start / resume from snapshot → exec / gitClone / writeFile / terminal (PTY) → createCodeContext + runCode (stateful interpreter) → startProcess + exposePort (preview URL) → Outbound egress proxy (credential injection per host) → Results streamed
+
+Key product notes:
+- Persistent: same session ID = same filesystem/shell/processes across days
+- Outbound Workers egress proxy: credentials injected at network layer, sandbox never sees raw secrets
+- Preview URLs: live public HTTPS for dev server output
+- Active CPU Pricing: no charge for idle sandboxes
+- Status: **GA** (developers.cloudflare.com/sandbox/)
+- Distinct from UC6 (Dynamic Workers — ephemeral, stateless code execution)
+
+## UC19 Flow Order (verified — AI Builder)
+
+UC19 ("Email for Agents") covers multi-channel AI agents using Cloudflare Email Service.
+
+**Architecture:** User → Email Routing → Agent Instance (Durable Object) → Email Service → Background Tasks / Reply
+
+**Node layout:** 1 left (user-inbox), 3 center (email-routing, agent-instance, email-service), 2 right (background-work, email-reply)
+
+**Steps (7):** User sends to agent address → Email Routing delivers to Worker → routeAgentEmail() + address-based resolver → onEmail hook fires, state persisted (Durable Object) → Async background work (Queues, other Workers) → env.EMAIL.send() reply → HMAC-signed reply routing + authenticated delivery
+
+Key product notes:
+- Each address maps to a unique Durable Object agent instance with persistent state
+- HMAC-SHA256 signed reply routing: replies route back to exact originating instance
+- SPF/DKIM/DMARC auto-configured on domain add
+- Also accessible via MCP server, Wrangler CLI, REST API, TypeScript/Python/Go SDKs
+- Status: **Public beta** (blog.cloudflare.com/email-for-agents)
+
+## UC20 Flow Order (verified — AI Builder)
+
+UC20 ("Artifacts: Git-Compatible Versioned Storage") covers Git-native versioned storage for agents.
+
+**Architecture:** Agent/Developer → Artifacts Binding → Versioned Repo → Git Protocol (HTTPS) → Git Clients / Forked Repo
+
+**Node layout:** 1 left (agent-dev), 3 center (artifacts-binding, artifacts-repo, git-protocol), 2 right (forked-repo, git-clients)
+
+**Steps (7):** import() from GitHub remote → Repo stored in Cloudflare managed storage (ArtifactFS) → HTTPS Git remote URL + token generated → fork(readOnly: true) creates isolated copy → Any Git client uses remote URL (push/pull/commit) → Session shared via fork URL → Agent commits code/config/session state with full history
+
+Key product notes:
+- Standard Git-over-HTTPS: no Cloudflare-specific tooling needed by Git clients
+- Tens of millions of repos supported — one per agent session if needed
+- REST API + TypeScript/Python/Go SDKs for non-Git clients
+- Internally used by Cloudflare to persist agent session state (sandbox filesystem + prompt history)
+- Status: **Beta** (developers.cloudflare.com/artifacts/)
 
 ## Design Tokens
 

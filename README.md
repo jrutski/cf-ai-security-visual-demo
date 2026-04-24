@@ -1,9 +1,10 @@
 # Cloudflare AI - Interactive Visual Demo
 
-An interactive, modular frontend web application that visualizes 14 Cloudflare AI use cases across two categories:
+An interactive, modular frontend web application that visualizes 20 Cloudflare AI use cases across three categories:
 
 - **[AI Security](src/ai-security.html)** (UC1–7) — how Cloudflare secures AI workloads: governing workforce GenAI usage, protecting AI-powered applications, securing self-hosted agents, and orchestrating safe multi-agent communication.
-- **[AI Builder](src/ai-builder.html)** (UC8–14) — how to build AI applications on Cloudflare: API key management, dynamic routing, RAG pipelines, voice agents, persistent chat, autonomous scheduling, and web-browsing agents.
+- **[AI Builder](src/ai-builder.html)** (UC8–14, 17–20) — how to build AI applications on Cloudflare: API key management, dynamic routing, RAG pipelines, voice agents, persistent chat, autonomous scheduling, web-browsing agents, and agentic primitives (persistent memory, sandboxes, email, versioned storage).
+- **[AI Optimization](src/ai-optimization.html)** (UC15–16) — how Cloudflare's infrastructure optimizes LLM performance: lossless weight compression and the Infire inference engine.
 
 Each use case features a step-through request-flow diagram showing how requests travel through Cloudflare's stack, with per-step explanations of which product acts and why.
 
@@ -43,6 +44,22 @@ Each use case features a step-through request-flow diagram showing how requests 
 | 13 | **Autonomous Scheduled Agent** | Agents SDK (Schedule), Durable Object Alarms, SQLite, Workers AI |
 | 14 | **Web-Browsing AI Agent** | Agents SDK, Browser Rendering (CDP), Workers AI, R2 |
 
+### Agentic Primitives
+
+| # | Use Case | Cloudflare Products |
+|---|----------|-------------------|
+| 17 | **Agent Memory** | Agent Memory, Agents SDK, Workers |
+| 18 | **Cloudflare Sandboxes** | Sandboxes, Outbound Workers (egress proxy), Containers |
+| 19 | **Email for Agents** | Email Service, Email Routing, Agents SDK, Durable Objects |
+| 20 | **Artifacts: Git-Compatible Versioned Storage** | Artifacts, Git Protocol (HTTPS), Workers |
+
+### AI Infrastructure Optimization
+
+| # | Use Case | Cloudflare Products |
+|---|----------|-------------------|
+| 15 | **Unweight: LLM Weight Compression** *(Research)* | Workers AI, Infire, Unweight |
+| 16 | **Workers AI Inference Engine** | Workers AI, Infire, Prompt Caching, Mooncake (KV cache), EAGLE-3 (speculative decoding) |
+
 ## How It Works
 
 Each use case presents an interactive diagram with three spatial columns:
@@ -57,15 +74,19 @@ Users can:
 - **Read the side panel** for each step's title, acting product, description, and "why it matters" context
 
 Three primary flow archetypes are visualized:
-1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4, UC8, UC9, UC10, UC11, UC12)
-2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5, UC13, UC14)
+1. **Human -> AI**: User-initiated requests flowing through Cloudflare controls to AI services (UC1, UC4, UC8, UC9, UC10, UC11, UC12, UC17, UC19)
+2. **Agentic AI -> Resources**: AI agent-initiated calls flowing through Cloudflare controls to downstream APIs, data, or tools (UC2, UC5, UC13, UC14, UC18, UC20)
 3. **Agent -> Agent**: AI-to-AI orchestration with identity, durable execution, and shared infrastructure (UC6, UC7)
+4. **Infrastructure / How It Works**: Internal Cloudflare platform optimizations visualized as a pipeline (UC15, UC16)
 
 ## Project Structure
 
 ```
 src/
-  index.html                          Landing page with 14 use case cards
+  index.html                          Landing page (20 use cases across 3 sections)
+  ai-security.html                    AI Security section landing (UC1–7)
+  ai-builder.html                     AI Builder section landing (UC8–14, 17–20)
+  ai-optimization.html                AI Optimization section landing (UC15–16)
   use-cases/
     uc1-genai-workforce.html          UC1: Secure Workforce Use of GenAI
     uc2-govern-agents.html            UC2: Govern AI Agents (MCP)
@@ -81,6 +102,12 @@ src/
     uc12-ai-chat.html                 UC12: Persistent AI Chat Agent
     uc13-scheduled-agent.html         UC13: Autonomous Scheduled Agent
     uc14-browser-agent.html           UC14: Web-Browsing AI Agent
+    uc15-unweight.html                UC15: Unweight: LLM Weight Compression
+    uc16-inference-engine.html        UC16: Workers AI Inference Engine
+    uc17-agent-memory.html            UC17: Agent Memory
+    uc18-sandboxes.html               UC18: Cloudflare Sandboxes
+    uc19-email-agents.html            UC19: Email for Agents
+    uc20-artifacts.html               UC20: Artifacts: Git-Compatible Versioned Storage
   components/
     flow-engine.js                    Shared step-through animation controller
     tooltip.js                        Per-node contextual overlay
@@ -104,8 +131,16 @@ src/
     uc12-steps.js                     UC12 nodes, edges, step definitions
     uc13-steps.js                     UC13 nodes, edges, step definitions
     uc14-steps.js                     UC14 nodes, edges, step definitions
+    uc15-steps.js                     UC15 nodes, edges, step definitions
+    uc16-steps.js                     UC16 nodes, edges, step definitions
+    uc17-steps.js                     UC17 nodes, edges, step definitions
+    uc18-steps.js                     UC18 nodes, edges, step definitions
+    uc19-steps.js                     UC19 nodes, edges, step definitions
+    uc20-steps.js                     UC20 nodes, edges, step definitions
 wrangler.jsonc                        Cloudflare Workers Static Assets config
 package.json
+scripts/
+  configure.js                        Pre-deploy: replaces SITE_URL across all files
 ```
 
 ## Architecture
@@ -225,15 +260,26 @@ UC2 (Govern AI Agents) and UC7 (Secure AI-to-AI Communication) have the most ASI
 - [Browse the Web (Browser Tools)](https://developers.cloudflare.com/agents/api-reference/browse-the-web/)
 - [MCP Server Portals](https://developers.cloudflare.com/cloudflare-one/access-controls/ai-controls/mcp-portals/)
 
+**Agentic Primitives**
+- [Agent Memory](https://developers.cloudflare.com/agents/concepts/memory/)
+- [Cloudflare Sandboxes](https://developers.cloudflare.com/sandbox/)
+- [Cloudflare Email Service (blog)](https://blog.cloudflare.com/email-for-agents)
+- [Artifacts](https://developers.cloudflare.com/artifacts/)
+- [Artifacts (blog)](https://blog.cloudflare.com/artifacts-git-for-agents-beta)
+
 **Developer Platform**
 - [Dynamic Workers](https://developers.cloudflare.com/dynamic-workers/)
 - [Codemode](https://developers.cloudflare.com/agents/api-reference/codemode/)
-- [Sandbox SDK](https://developers.cloudflare.com/sandbox/)
 - [Workflows](https://developers.cloudflare.com/workflows/)
 - [AI Search](https://developers.cloudflare.com/ai-search/)
 - [Vectorize](https://developers.cloudflare.com/vectorize/)
 - [Workers AI](https://developers.cloudflare.com/workers-ai/)
+- [Workers AI Prompt Caching](https://developers.cloudflare.com/workers-ai/features/prompt-caching/)
 - [Browser Rendering](https://developers.cloudflare.com/browser-rendering/)
+
+**AI Optimization**
+- [Unweight: LLM Weight Compression (blog)](https://blog.cloudflare.com/unweight-tensor-compression/)
+- [High-Performance LLMs / Infire (blog)](https://blog.cloudflare.com/high-performance-llms/)
 
 **Infrastructure**
 - [Workers Static Assets](https://developers.cloudflare.com/workers/static-assets/)
