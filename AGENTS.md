@@ -1,4 +1,4 @@
-# Cloudflare AI Security Visual Demo
+# Cloudflare AI - Interactive Visual Demo
 
 ## Project Overview
 
@@ -48,7 +48,9 @@ For a purely static site, only `assets.directory` is needed in `wrangler.jsonc`.
 3. Add a card to the appropriate section landing page (`src/ai-security.html`, `src/ai-builder.html`, or `src/ai-optimization.html`)
 4. Update the use case count on `src/index.html` for the relevant category card
 5. Add the new URL to `src/sitemap.xml`
-6. No changes needed to `flow-engine.js`, `tooltip.js`, or `legend.js`
+6. Update `README.md`: add the UC row to the correct use case table, add its HTML and data files to the Project Structure listing, and add any new product doc/blog links to the References section
+7. Update `AGENTS.md`: add a `## UCN Flow Order` section documenting the architecture, node layout, step count, and key product notes (including GA/beta/research status)
+8. No changes needed to `flow-engine.js`, `tooltip.js`, or `legend.js`
 
 ## Product Accuracy (MANDATORY)
 
