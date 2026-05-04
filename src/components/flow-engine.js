@@ -16,6 +16,8 @@ export class FlowEngine {
     this.currentStep = -1; // -1 = overview (nothing highlighted)
     this.isPlaying = false;
     this.playInterval = null;
+    const savedSpeed = localStorage.getItem('cf-demo-playSpeed');
+    this.playSpeed = savedSpeed ? parseInt(savedSpeed, 10) : 5000;
     this.onStepChange = onStepChange || (() => {});
     this._container = null;
     this._panel = null;
@@ -281,6 +283,37 @@ export class FlowEngine {
       resetBtn.addEventListener('click', () => this.reset());
     }
 
+    // Inject speed selector
+    const controls = this._panel.querySelector('.panel-controls');
+    if (controls) {
+      const select = document.createElement('select');
+      select.className = 'speed-select';
+      select.setAttribute('aria-label', 'Playback speed');
+      select.setAttribute('data-action', 'speed');
+      [{ label: 'Slow', ms: 5000 }, { label: 'Fast', ms: 2500 }].forEach(({ label, ms }) => {
+        const opt = document.createElement('option');
+        opt.value = ms;
+        opt.textContent = label;
+        opt.selected = ms === this.playSpeed;
+        select.appendChild(opt);
+      });
+      select.addEventListener('change', () => {
+        this.playSpeed = parseInt(select.value, 10);
+        localStorage.setItem('cf-demo-playSpeed', select.value);
+        if (this.isPlaying) {
+          clearInterval(this.playInterval);
+          this.playInterval = setInterval(() => {
+            if (this.currentStep < this.steps.length - 1) {
+              this.next();
+            } else {
+              this.pause();
+            }
+          }, this.playSpeed);
+        }
+      });
+      controls.appendChild(select);
+    }
+
     // Mark the step info panel as a live region for screen readers
     const stepInfo = this._panel.querySelector('.panel-step-info');
     if (stepInfo) {
@@ -424,7 +457,7 @@ export class FlowEngine {
       } else {
         this.pause();
       }
-    }, 2500);
+    }, this.playSpeed);
   }
 
   pause() {
